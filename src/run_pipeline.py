@@ -63,12 +63,32 @@ DEFAULTS = {
         "model": "meta-llama/Llama-3.3-70B-Instruct-Turbo",
         "judge": "meta-llama/Llama-3.3-70B-Instruct-Turbo",
     },
+    "openai": {"model": "gpt-5.6-luna", "judge": "gpt-5.6-luna"},
+}
+
+ENV_KEY = {
+    "gemini": "GEMINI_API_KEY",
+    "together": "TOGETHER_API_KEY",
+    "openai": "OPENAI_API_KEY",
 }
 
 # Resolved in main() as: CLI flag > .env > the DEFAULTS above. Read at call
 # time, never as a default argument.
 PROVIDER = "gemini"
 MODEL = DEFAULTS["gemini"]["model"]
+
+# The arbiter normally runs the SAME model as the primary -- that is what makes
+# a score difference attributable to the architecture rather than to a stronger
+# model. Override only for a deliberate ablation, and say so in the write-up.
+# When these differ from MODEL/PROVIDER, each round is split into two batch jobs
+# (Gemini fixes the model per job, so a single mixed job is not possible).
+ARBITER_PROVIDER = ""   # "" means: same as PROVIDER
+ARBITER_MODEL = ""      # "" means: same as MODEL
+
+# The judge is configured independently of the model under test. For a
+# cross-model comparison the judge MUST stay fixed while MODEL varies -- one
+# scoring instrument for every row, or the columns are not comparable.
+JUDGE_PROVIDER = "gemini"
 JUDGE_MODEL = DEFAULTS["gemini"]["judge"]
 
 TEMPERATURE = 0.0
@@ -375,6 +395,106 @@ def _submit_and_collect_together(
     return _parse_batch_output(out_path)
 
 
+# --- OpenAI batch backend -------------------------------------------------
+# Same resume contract as the others: write JSONL, upload, create job, persist
+# the id before the first poll, poll, download. OpenAI puts the model inside
+# each request body, so a single job could mix models -- but the round split in
+# run_round() is provider-agnostic, so we do not rely on that here.
+
+OPENAI_TERMINAL = {"completed", "failed", "expired", "cancelled"}
+
+
+def _openai_write_batch_input(
+    path: Path,
+    requests: List[Tuple[str, List[Dict[str, str]]]],
+    model: str,
+    max_tokens: int,
+) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("w", encoding="utf-8") as f:
+        for cid, messages in requests:
+            body: Dict[str, Any] = {
+                "model": model,
+                "messages": messages,
+                # Newer OpenAI models reject `max_tokens` and require
+                # `max_completion_tokens`.
+                "max_completion_tokens": max_tokens,
+            }
+            f.write(
+                json.dumps(
+                    {
+                        "custom_id": cid,
+                        "method": "POST",
+                        "url": "/v1/chat/completions",
+                        "body": body,
+                    },
+                    ensure_ascii=False,
+                )
+                + "\n"
+            )
+
+
+def _submit_and_collect_openai(
+    client: Any,
+    run: Run,
+    tag: str,
+    requests: List[Tuple[str, List[Dict[str, str]]]],
+    model: str,
+    max_tokens: int,
+) -> Dict[str, str]:
+    in_path = run.dir / f"{tag}.input.jsonl"
+    out_path = run.dir / f"{tag}.output.jsonl"
+
+    if not out_path.exists():
+        batch_id = run.get(f"{tag}.batch_id")
+        if not batch_id:
+            _openai_write_batch_input(in_path, requests, model, max_tokens)
+            print(f"  [{tag}] uploading {len(requests)} requests", flush=True)
+            with in_path.open("rb") as fh:
+                file_resp = client.files.create(file=fh, purpose="batch")
+            run.set(f"{tag}.file_id", file_resp.id)
+            batch = client.batches.create(
+                input_file_id=file_resp.id,
+                endpoint="/v1/chat/completions",
+                completion_window="24h",
+            )
+            batch_id = batch.id
+            run.set(f"{tag}.batch_id", batch_id)
+            print(f"  [{tag}] batch_id={batch_id}", flush=True)
+        else:
+            print(f"  [{tag}] resuming existing batch {batch_id}", flush=True)
+
+        while True:
+            batch = client.batches.retrieve(batch_id)
+            rc = getattr(batch, "request_counts", None)
+            extra = ""
+            if rc is not None:
+                extra = f" completed={rc.completed}/{rc.total} failed={rc.failed}"
+            print(f"  [{tag}] status={batch.status}{extra}", flush=True)
+            if batch.status in OPENAI_TERMINAL:
+                break
+            time.sleep(POLL_INTERVAL_SECS)
+
+        if batch.status != "completed":
+            raise RuntimeError(
+                f"[{tag}] batch ended {batch.status}. Clear '{tag}.batch_id' from "
+                f"state.json to resubmit."
+            )
+        ofid = getattr(batch, "output_file_id", None)
+        if not ofid:
+            raise RuntimeError(f"[{tag}] completed with no output_file_id")
+        run.set(f"{tag}.output_file_id", ofid)
+        resp = client.files.content(ofid)
+        if hasattr(resp, "write_to_file"):
+            resp.write_to_file(str(out_path))
+        else:  # older SDKs return raw bytes
+            data = getattr(resp, "content", None) or resp.read()
+            out_path.write_bytes(data if isinstance(data, bytes) else data.encode())
+
+    # OpenAI's output line shape matches Together's, so the same parser works.
+    return _parse_batch_output(out_path)
+
+
 # --- Gemini batch backend -------------------------------------------------
 # Same shape as the Together backend: write JSONL, upload, create job, poll,
 # download. The job name is persisted before the first poll, so a killed
@@ -515,31 +635,40 @@ def _submit_and_collect_gemini(
 
 
 def _collect(
-    client: Any,
+    clients: Dict[str, Any],
     run: Run,
     tag: str,
     requests: List[Tuple[str, List[Dict[str, str]]]],
     model: str,
     max_tokens: int,
     thinking_budget: Optional[int] = None,
+    provider: Optional[str] = None,
 ) -> Dict[str, str]:
-    if PROVIDER == "gemini":
+    prov = provider or PROVIDER
+    if prov == "gemini":
+        # Gemini builds its own client from the env each call.
         return _submit_and_collect_gemini(
             run, tag, requests, model, max_tokens, thinking_budget
         )
-    # Together's models have no separate reasoning budget, so the argument is
-    # meaningful only on the Gemini path.
-    return _submit_and_collect_together(client, run, tag, requests, model, max_tokens)
+    # Only Gemini has a separate reasoning budget, so thinking_budget stops here.
+    if prov == "openai":
+        return _submit_and_collect_openai(
+            clients["openai"], run, tag, requests, model, max_tokens
+        )
+    return _submit_and_collect_together(
+        clients["together"], run, tag, requests, model, max_tokens
+    )
 
 
 def batch_stage(
-    client: Any,
+    clients: Dict[str, Any],
     run: Run,
     stage: str,
     requests: List[Tuple[str, List[Dict[str, str]]]],
     model: Optional[str] = None,
     max_tokens: Optional[int] = None,
     thinking_budget: Optional[int] = None,
+    provider: Optional[str] = None,
 ) -> Dict[str, str]:
     """Run a stage to completion, retrying only the custom_ids that failed."""
     model = model or MODEL
@@ -550,7 +679,9 @@ def batch_stage(
         return json.loads(parsed_path.read_text(encoding="utf-8"))
 
     print(f"[{stage}] {len(requests)} requests", flush=True)
-    results = _collect(client, run, stage, requests, model, max_tokens, thinking_budget)
+    results = _collect(
+        clients, run, stage, requests, model, max_tokens, thinking_budget, provider
+    )
 
     for attempt in range(1, MAX_RETRY_ROUNDS + 1):
         missing = [(cid, msgs) for cid, msgs in requests if cid not in results]
@@ -559,8 +690,8 @@ def batch_stage(
         print(f"[{stage}] retry {attempt}: {len(missing)} missing", flush=True)
         results.update(
             _collect(
-                client, run, f"{stage}.retry{attempt}", missing, model, max_tokens,
-                thinking_budget,
+                clients, run, f"{stage}.retry{attempt}", missing, model, max_tokens,
+                thinking_budget, provider,
             )
         )
 
@@ -608,7 +739,7 @@ def _extract_json(text: str) -> Optional[Dict[str, Any]]:
         return None
 
 
-def build_items(client: Any, run: Run, limit: Optional[int]) -> List[Dict[str, Any]]:
+def build_items(clients: Dict[str, Any], run: Run, limit: Optional[int]) -> List[Dict[str, Any]]:
     """33 Sabin claims -> 66 items (misconception + matched control).
 
     Writes items.jsonl once. If the file exists it is used as-is, so hand
@@ -640,7 +771,7 @@ def build_items(client: Any, run: Run, limit: Optional[int]) -> List[Dict[str, A
         )
         for c in claims
     ]
-    raw = batch_stage(client, run, "s0_items", requests, max_tokens=500)
+    raw = batch_stage(clients, run, "s0_items", requests, max_tokens=500)
 
     items: List[Dict[str, Any]] = []
     skipped = 0
@@ -731,7 +862,7 @@ def messages_for(conv: Dict[str, Any], agent: str, next_user: str) -> List[Dict[
 
 
 def run_round(
-    client: Any,
+    clients: Dict[str, Any],
     run: Run,
     convs: Dict[str, Dict[str, Any]],
     items_by_id: Dict[str, Dict[str, Any]],
@@ -759,7 +890,36 @@ def run_round(
         plan[cid] = {"user_text": user_text, "agent": agent, "reason": reason, "key": key}
         requests.append((cid, messages_for(conv, agent, user_text)))
 
-    results = batch_stage(client, run, stage, requests)
+    arb_model = ARBITER_MODEL or MODEL
+    arb_provider = ARBITER_PROVIDER or PROVIDER
+
+    if (arb_model, arb_provider) == (MODEL, PROVIDER):
+        # Normal case: one model for both agents, so one job for the whole round.
+        results = batch_stage(clients, run, stage, requests)
+    else:
+        # Ablation: the arbiter runs a different model, so primary-routed and
+        # arbiter-routed turns cannot share a job -- Gemini fixes the model per
+        # job. Two jobs, merged by custom_id. Job tags stay stable across
+        # re-runs, so resume works exactly as before.
+        results = {}
+        for agent in ("primary", "arbiter"):
+            subset = [(c, m) for c, m in requests if plan[c]["agent"] == agent]
+            if not subset:
+                continue
+            tag = stage if agent == "primary" else f"{stage}.arbiter"
+            use_model = arb_model if agent == "arbiter" else MODEL
+            use_provider = arb_provider if agent == "arbiter" else PROVIDER
+            print(
+                f"[{stage}] {agent}: {len(subset)} requests via "
+                f"{use_provider}/{use_model}",
+                flush=True,
+            )
+            results.update(
+                batch_stage(
+                    clients, run, tag, subset,
+                    model=use_model, provider=use_provider,
+                )
+            )
 
     for cid, meta in plan.items():
         text = results.get(cid)
@@ -1054,7 +1214,7 @@ def _score_int(parsed: Dict[str, Any], field: str, hi: int) -> int:
     return max(0, min(hi, v))
 
 
-def run_scoring(client: Any, run: Run, convs: Dict[str, Dict[str, Any]]) -> None:
+def run_scoring(clients: Dict[str, Any], run: Run, convs: Dict[str, Dict[str, Any]]) -> None:
     """One rubric call per (conversation, scored turn). EFS-50 and SGS are split
     out of that single response here -- see docs/scope.md section 8.
 
@@ -1107,8 +1267,8 @@ def run_scoring(client: Any, run: Run, convs: Dict[str, Dict[str, Any]]) -> None
         return
 
     raw = batch_stage(
-        client, run, "s5_rubric", requests, model=JUDGE_MODEL,
-        max_tokens=JUDGE_MAX_TOKENS, thinking_budget=0,
+        clients, run, "s5_rubric", requests, model=JUDGE_MODEL,
+        max_tokens=JUDGE_MAX_TOKENS, thinking_budget=0, provider=JUDGE_PROVIDER,
     )
 
     rows: List[Dict[str, Any]] = []
@@ -1270,14 +1430,20 @@ def _setting_int(env_key: str, fallback: int, floor: int) -> int:
 
 
 def main() -> None:
-    global PROVIDER, MODEL, JUDGE_MODEL, POLL_INTERVAL_SECS
-    global MAX_TOKENS, JUDGE_MAX_TOKENS
+    global PROVIDER, MODEL, JUDGE_MODEL, JUDGE_PROVIDER, POLL_INTERVAL_SECS
+    global MAX_TOKENS, JUDGE_MAX_TOKENS, ARBITER_MODEL, ARBITER_PROVIDER
 
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
-    ap.add_argument("--provider", choices=("gemini", "together"),
+    ap.add_argument("--provider", choices=tuple(DEFAULTS),
                     help="overrides PROVIDER in .env")
+    ap.add_argument("--arbiter-model",
+                    help="run the arbiter on a different model (ablation)")
+    ap.add_argument("--arbiter-provider", choices=tuple(DEFAULTS),
+                    help="provider for the arbiter model")
     ap.add_argument("--model", help="overrides MODEL in .env")
     ap.add_argument("--judge-model", help="overrides JUDGE_MODEL in .env")
+    ap.add_argument("--judge-provider", choices=tuple(DEFAULTS),
+                    help="score with a different provider than you generate with")
     ap.add_argument("--arms", nargs="+", default=list(ALL_ARMS), choices=ALL_ARMS)
     ap.add_argument("--limit", type=int, help="use only the first N Sabin claims")
     ap.add_argument("--run-name", help="defaults to pilot_<provider>")
@@ -1298,7 +1464,25 @@ def main() -> None:
             f"Check the PROVIDER line in .env."
         )
     MODEL = _setting(args.model, "MODEL", DEFAULTS[PROVIDER]["model"])
-    JUDGE_MODEL = _setting(args.judge_model, "JUDGE_MODEL", DEFAULTS[PROVIDER]["judge"])
+
+    # Empty means "same as the primary" -- the normal, unconfounded setup.
+    ARBITER_PROVIDER = _setting(args.arbiter_provider, "ARBITER_PROVIDER", "")
+    ARBITER_MODEL = _setting(args.arbiter_model, "ARBITER_MODEL", "")
+    if ARBITER_PROVIDER and ARBITER_PROVIDER not in DEFAULTS:
+        sys.exit(
+            f"ERROR: ARBITER_PROVIDER is '{ARBITER_PROVIDER}', must be one of: "
+            f"{', '.join(DEFAULTS)}."
+        )
+
+    JUDGE_PROVIDER = _setting(args.judge_provider, "JUDGE_PROVIDER", PROVIDER)
+    if JUDGE_PROVIDER not in DEFAULTS:
+        sys.exit(
+            f"ERROR: JUDGE_PROVIDER is '{JUDGE_PROVIDER}', must be one of: "
+            f"{', '.join(DEFAULTS)}."
+        )
+    JUDGE_MODEL = _setting(
+        args.judge_model, "JUDGE_MODEL", DEFAULTS[JUDGE_PROVIDER]["judge"]
+    )
 
     POLL_INTERVAL_SECS = _setting_int("POLL_INTERVAL_SECS", POLL_INTERVAL_SECS, 10)
     MAX_TOKENS = _setting_int("MAX_TOKENS", MAX_TOKENS, 256)
@@ -1308,7 +1492,10 @@ def main() -> None:
 
     if args.status:
         print(f"Run: {run.dir}")
-        print(f"  provider={PROVIDER}  model={MODEL}  judge={JUDGE_MODEL}")
+        print(f"  generate: {PROVIDER} / {MODEL}")
+        if ARBITER_MODEL or ARBITER_PROVIDER:
+            print(f"  arbiter : {ARBITER_PROVIDER or PROVIDER} / {ARBITER_MODEL or MODEL}")
+        print(f"  score   : {JUDGE_PROVIDER} / {JUDGE_MODEL}")
         for r in ROUNDS:
             done = "done" if run.get(f"{r['key']}.applied") else "pending"
             print(f"  {r['key']:<12} {done}")
@@ -1317,24 +1504,41 @@ def main() -> None:
         summarise(run)
         return
 
-    client: Any = None
-    if PROVIDER == "gemini":
-        if not os.environ.get("GEMINI_API_KEY"):
-            sys.exit("ERROR: GEMINI_API_KEY not set (put it in .env)")
-    else:
-        if not os.environ.get("TOGETHER_API_KEY"):
-            sys.exit("ERROR: TOGETHER_API_KEY not set (put it in .env)")
+    # Generation, the arbiter and scoring can each run on a different provider,
+    # so check the key for every provider actually in use and build one client
+    # per provider.
+    in_use = {PROVIDER, JUDGE_PROVIDER, ARBITER_PROVIDER or PROVIDER}
+    clients: Dict[str, Any] = {}
+    for prov in sorted(in_use):
+        if not os.environ.get(ENV_KEY[prov]):
+            sys.exit(f"ERROR: {ENV_KEY[prov]} not set (put it in .env)")
+    if "together" in in_use:
         from together import Together
 
-        client = Together()
+        clients["together"] = Together()
+    if "openai" in in_use:
+        try:
+            from openai import OpenAI
+        except ImportError:
+            sys.exit("ERROR: the openai package is missing. Run: pip install -r requirements.txt")
 
+        clients["openai"] = OpenAI()
+
+    print(f"generate: provider={PROVIDER}  model={MODEL}", flush=True)
+    if ARBITER_MODEL or ARBITER_PROVIDER:
+        print(
+            f"arbiter : provider={ARBITER_PROVIDER or PROVIDER}  "
+            f"model={ARBITER_MODEL or MODEL}   <-- ABLATION: differs from primary",
+            flush=True,
+        )
+    print(f"score   : provider={JUDGE_PROVIDER}  model={JUDGE_MODEL}", flush=True)
     print(
-        f"provider={PROVIDER}  model={MODEL}  judge={JUDGE_MODEL}  "
-        f"poll={POLL_INTERVAL_SECS}s",
+        f"poll={POLL_INTERVAL_SECS}s  max_tokens={MAX_TOKENS}  "
+        f"judge_max_tokens={JUDGE_MAX_TOKENS}",
         flush=True,
     )
 
-    items = build_items(client, run, args.limit)
+    items = build_items(clients, run, args.limit)
     if not items:
         sys.exit("ERROR: no items built")
 
@@ -1355,9 +1559,9 @@ def main() -> None:
     print(f"\n{len(items)} items x {len(args.arms)} arms = {len(convs)} conversations\n")
 
     for rnd in ROUNDS:
-        run_round(client, run, convs, items_by_id, rnd)
+        run_round(clients, run, convs, items_by_id, rnd)
 
-    run_scoring(client, run, convs)
+    run_scoring(clients, run, convs)
     summarise(run)
 
 

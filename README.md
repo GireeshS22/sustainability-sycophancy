@@ -25,16 +25,17 @@ pip install -r requirements.txt
 cp .env.example .env
 ```
 
-Open `.env` in a text editor and paste your Gemini key after `GEMINI_API_KEY=`.
-Get a free key at <https://aistudio.google.com/apikey>.
+Open `.env` in a text editor and paste in the two keys you were given:
 
 ```
-GEMINI_API_KEY=AIza...
+OPENAI_API_KEY=sk-...      <- the model being tested
+GEMINI_API_KEY=AIza...     <- the model that does the scoring
 ```
 
-Leave `TOGETHER_API_KEY` blank. You won't need it.
+Both are needed: the conversations run on OpenAI, the scoring runs on Gemini.
+Leave `TOGETHER_API_KEY` blank.
 
-The same file also holds the provider, the model names and the polling interval.
+The same file also holds the model names, token limits and polling interval.
 **Leave all of those exactly as they are** unless Gireesh tells you otherwise —
 they are already set correctly for this run.
 
@@ -72,11 +73,14 @@ That's it. Leave it running.
 
 ## What to expect while it runs
 
-Every LLM call goes through the **Gemini Batch API**. The script submits a job,
-then waits and prints the job's state **every 2 minutes**:
+Every LLM call goes through a **Batch API**. The script submits a job, then
+waits and prints the job's state **every 2 minutes**:
 
 ```
-provider=gemini  model=gemini-2.5-flash  judge=gemini-2.5-flash  poll=120s
+generate: provider=openai  model=gpt-5.6-luna
+arbiter : provider=openai  model=gpt-5.6-terra   <-- ABLATION: differs from primary
+score   : provider=gemini  model=gemini-2.5-flash
+poll=120s  max_tokens=2000  judge_max_tokens=1200
 [s0_items] 33 requests
   [s0_items] uploading 33 requests
   [s0_items] job=batches/xyz123
@@ -152,8 +156,9 @@ python src/run_pipeline.py --status
 
 | What you see | What to do |
 | --- | --- |
-| `GEMINI_API_KEY not set` | Step 2 didn't work — check `.env` has your key |
-| `PROVIDER is '...', must be one of` | You edited the `PROVIDER` line in `.env`. Set it back to `gemini` |
+| `OPENAI_API_KEY not set` / `GEMINI_API_KEY not set` | Step 2 didn't work — check `.env` has both keys |
+| `The model ... does not exist` | The model name in `.env` is wrong or you lack access. Stop and report |
+| `PROVIDER is '...', must be one of` | You edited the `PROVIDER` line in `.env`. Set it back to `openai` |
 | `sabin_claims.json not found` | Run step 3 — `python scripts/fetch_data.py` |
 | Terminal stuck on `JOB_STATE_RUNNING` | Nothing is wrong. It only prints every 2 minutes, so long silences are expected. Wait. |
 | Crashed, closed laptop, lost connection | Run the same command again |
@@ -166,14 +171,14 @@ the file that remembers what's already done.
 If you truly need to start over from scratch, delete the whole folder:
 
 ```bash
-rm -rf logs/pilot_gemini
+rm -rf logs/pilot_openai
 ```
 
 ---
 
 ## Where the results go
 
-Everything is written to `logs/pilot_gemini/`:
+Everything is written to `logs/pilot_openai/`:
 
 | File | What it is |
 | --- | --- |
@@ -183,7 +188,7 @@ Everything is written to `logs/pilot_gemini/`:
 | `state.json` | Resume bookkeeping — don't touch |
 | `*.input.jsonl` / `*.output.jsonl` | Raw batch files, keep them |
 
-Zip the whole `logs/pilot_gemini/` folder and send it over when the run is done.
+Zip the whole `logs/pilot_openai/` folder and send it over when the run is done.
 
 ---
 
@@ -211,8 +216,8 @@ Not needed for the run above.
 # Progress check, costs nothing
 python src/run_pipeline.py --status
 
-# Scaled runs use Together's Batch API instead
-python src/run_pipeline.py --provider together
+# Any provider can be swapped from the command line
+python src/run_pipeline.py --provider gemini --model gemini-2.5-flash
 
 # Separate run folders never interfere
 python src/run_pipeline.py --run-name experiment_2

@@ -580,12 +580,33 @@ run for tens of minutes to hours, and the resume guarantee comes from persisting
 the handle before the first poll, not from polling often.
 
 **Configuration lives in `.env`**, not in code or in the command line:
-`PROVIDER`, `MODEL`, `JUDGE_MODEL`, `POLL_INTERVAL_SECS` alongside the API keys.
-Resolution order is CLI flag > `.env` > built-in default, and the resolved values
-are echoed on the first line of every run and by `--status`, so a run can never
-be silently mislabelled. `MODEL` is shared by the baseline and EF arms by
-design — they differ only in system prompt, which is what makes the comparison
-attributable to the arbiter path.
+`PROVIDER`, `MODEL`, `ARBITER_PROVIDER`, `ARBITER_MODEL`, `JUDGE_PROVIDER`,
+`JUDGE_MODEL`, `MAX_TOKENS`, `JUDGE_MAX_TOKENS`, `POLL_INTERVAL_SECS` alongside
+the API keys. Resolution order is CLI flag > `.env` > built-in default, and the
+resolved values are echoed on the first lines of every run and by `--status`, so
+a run can never be silently mislabelled.
+
+Three providers, each with a Batch API and the same resume contract: **Gemini**,
+**OpenAI**, **Together**. Generation, the arbiter and the judge are configured
+independently, so a run can generate on one provider and score on another. The
+credential check covers every provider actually in use.
+
+**The judge must stay fixed across models.** Every run to date is scored with
+`gemini-2.5-flash`. Varying the judge alongside the model under test would make
+the rows of a cross-model table incomparable.
+
+**`ARBITER_MODEL` defaults to `MODEL`, and should normally stay there.** Baseline
+and EF then differ only in system prompt, which is what makes a score difference
+attributable to the *architecture*. Pointing the arbiter at a different model
+converts the experiment into an ablation — it answers "does a second, different
+model as arbiter help?", which is a different and weaker claim than "the EF
+architecture transfers." If a run is configured that way, the paper must say so
+explicitly and must not present the result as architecture-only evidence. The
+run header prints `<-- ABLATION: differs from primary` whenever it applies.
+
+Mechanically, a differing arbiter model splits each round into **two** batch jobs
+(`<round>` and `<round>.arbiter`) rather than one, because Gemini fixes the model
+per job. Job tags are stable across re-runs, so resume is unaffected.
 
 **Delegation:** the pilot is meant to be handed to an intern who runs it and
 reports the output table. `README.md` is written as a runbook with no design
