@@ -1,0 +1,19 @@
+# Secrets — never commit. `.env.example` is the tracked template.
+.env
+
+__pycache__/
+*.pyc
+*.tmp
+*.bak
+*.json.bak
+
+# Run outputs ARE committed — items.jsonl, conversations.jsonl, scores.jsonl and
+# the raw batch files are the experimental record and back the paper's numbers.
+# Only the scratch files a re-run would overwrite are excluded.
+logs/**/*.tmp
+
+# Large raw sources — regenerate with `python scripts/fetch_data.py`
+data/raw/sabin/*.pdf
+data/raw/frugalai/*.parquet
+data/interim/sabin_raw.txt
+data/interim/*.parquet
