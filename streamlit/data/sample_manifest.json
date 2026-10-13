@@ -1,0 +1,488 @@
+{
+ "seed": 20261013,
+ "per_cell": 2,
+ "created_utc": "2026-10-13T12:19:20.060132+00:00",
+ "n": 96,
+ "samples": [
+  {
+   "run": "pilot_gemini",
+   "key": "SABIN-05-M||baseline",
+   "round": "r1_assert"
+  },
+  {
+   "run": "pilot_gemini",
+   "key": "SABIN-25-M||baseline",
+   "round": "r1_assert"
+  },
+  {
+   "run": "pilot_gemini",
+   "key": "SABIN-27-M||baseline",
+   "round": "r2_press1"
+  },
+  {
+   "run": "pilot_gemini",
+   "key": "SABIN-33-M||baseline",
+   "round": "r2_press1"
+  },
+  {
+   "run": "pilot_gemini",
+   "key": "SABIN-10-M||baseline",
+   "round": "r3_press2"
+  },
+  {
+   "run": "pilot_gemini",
+   "key": "SABIN-12-M||baseline",
+   "round": "r3_press2"
+  },
+  {
+   "run": "pilot_gemini",
+   "key": "SABIN-30-C||baseline",
+   "round": "r1_assert"
+  },
+  {
+   "run": "pilot_gemini",
+   "key": "SABIN-04-C||baseline",
+   "round": "r1_assert"
+  },
+  {
+   "run": "pilot_gemini",
+   "key": "SABIN-26-C||baseline",
+   "round": "r2_press1"
+  },
+  {
+   "run": "pilot_gemini",
+   "key": "SABIN-15-C||baseline",
+   "round": "r2_press1"
+  },
+  {
+   "run": "pilot_gemini",
+   "key": "SABIN-02-C||baseline",
+   "round": "r3_press2"
+  },
+  {
+   "run": "pilot_gemini",
+   "key": "SABIN-09-C||baseline",
+   "round": "r3_press2"
+  },
+  {
+   "run": "pilot_gemini",
+   "key": "SABIN-04-M||ef",
+   "round": "r1_assert"
+  },
+  {
+   "run": "pilot_gemini",
+   "key": "SABIN-32-M||ef",
+   "round": "r1_assert"
+  },
+  {
+   "run": "pilot_gemini",
+   "key": "SABIN-27-M||ef",
+   "round": "r2_press1"
+  },
+  {
+   "run": "pilot_gemini",
+   "key": "SABIN-23-M||ef",
+   "round": "r2_press1"
+  },
+  {
+   "run": "pilot_gemini",
+   "key": "SABIN-06-M||ef",
+   "round": "r3_press2"
+  },
+  {
+   "run": "pilot_gemini",
+   "key": "SABIN-20-M||ef",
+   "round": "r3_press2"
+  },
+  {
+   "run": "pilot_gemini",
+   "key": "SABIN-01-C||ef",
+   "round": "r1_assert"
+  },
+  {
+   "run": "pilot_gemini",
+   "key": "SABIN-14-C||ef",
+   "round": "r1_assert"
+  },
+  {
+   "run": "pilot_gemini",
+   "key": "SABIN-32-C||ef",
+   "round": "r2_press1"
+  },
+  {
+   "run": "pilot_gemini",
+   "key": "SABIN-06-C||ef",
+   "round": "r2_press1"
+  },
+  {
+   "run": "pilot_gemini",
+   "key": "SABIN-33-C||ef",
+   "round": "r3_press2"
+  },
+  {
+   "run": "pilot_gemini",
+   "key": "SABIN-10-C||ef",
+   "round": "r3_press2"
+  },
+  {
+   "run": "pilot_openai_same",
+   "key": "SABIN-12-M||baseline",
+   "round": "r1_assert"
+  },
+  {
+   "run": "pilot_openai_same",
+   "key": "SABIN-13-M||baseline",
+   "round": "r1_assert"
+  },
+  {
+   "run": "pilot_openai_same",
+   "key": "SABIN-16-M||baseline",
+   "round": "r2_press1"
+  },
+  {
+   "run": "pilot_openai_same",
+   "key": "SABIN-01-M||baseline",
+   "round": "r2_press1"
+  },
+  {
+   "run": "pilot_openai_same",
+   "key": "SABIN-04-M||baseline",
+   "round": "r3_press2"
+  },
+  {
+   "run": "pilot_openai_same",
+   "key": "SABIN-05-M||baseline",
+   "round": "r3_press2"
+  },
+  {
+   "run": "pilot_openai_same",
+   "key": "SABIN-09-C||baseline",
+   "round": "r1_assert"
+  },
+  {
+   "run": "pilot_openai_same",
+   "key": "SABIN-15-C||baseline",
+   "round": "r1_assert"
+  },
+  {
+   "run": "pilot_openai_same",
+   "key": "SABIN-28-C||baseline",
+   "round": "r2_press1"
+  },
+  {
+   "run": "pilot_openai_same",
+   "key": "SABIN-05-C||baseline",
+   "round": "r2_press1"
+  },
+  {
+   "run": "pilot_openai_same",
+   "key": "SABIN-27-C||baseline",
+   "round": "r3_press2"
+  },
+  {
+   "run": "pilot_openai_same",
+   "key": "SABIN-13-C||baseline",
+   "round": "r3_press2"
+  },
+  {
+   "run": "pilot_openai_same",
+   "key": "SABIN-05-M||ef",
+   "round": "r1_assert"
+  },
+  {
+   "run": "pilot_openai_same",
+   "key": "SABIN-03-M||ef",
+   "round": "r1_assert"
+  },
+  {
+   "run": "pilot_openai_same",
+   "key": "SABIN-29-M||ef",
+   "round": "r2_press1"
+  },
+  {
+   "run": "pilot_openai_same",
+   "key": "SABIN-18-M||ef",
+   "round": "r2_press1"
+  },
+  {
+   "run": "pilot_openai_same",
+   "key": "SABIN-23-M||ef",
+   "round": "r3_press2"
+  },
+  {
+   "run": "pilot_openai_same",
+   "key": "SABIN-14-M||ef",
+   "round": "r3_press2"
+  },
+  {
+   "run": "pilot_openai_same",
+   "key": "SABIN-17-C||ef",
+   "round": "r1_assert"
+  },
+  {
+   "run": "pilot_openai_same",
+   "key": "SABIN-03-C||ef",
+   "round": "r1_assert"
+  },
+  {
+   "run": "pilot_openai_same",
+   "key": "SABIN-08-C||ef",
+   "round": "r2_press1"
+  },
+  {
+   "run": "pilot_openai_same",
+   "key": "SABIN-21-C||ef",
+   "round": "r2_press1"
+  },
+  {
+   "run": "pilot_openai_same",
+   "key": "SABIN-20-C||ef",
+   "round": "r3_press2"
+  },
+  {
+   "run": "pilot_openai_same",
+   "key": "SABIN-24-C||ef",
+   "round": "r3_press2"
+  },
+  {
+   "run": "pilot_llama",
+   "key": "SABIN-07-M||baseline",
+   "round": "r1_assert"
+  },
+  {
+   "run": "pilot_llama",
+   "key": "SABIN-12-M||baseline",
+   "round": "r1_assert"
+  },
+  {
+   "run": "pilot_llama",
+   "key": "SABIN-14-M||baseline",
+   "round": "r2_press1"
+  },
+  {
+   "run": "pilot_llama",
+   "key": "SABIN-03-M||baseline",
+   "round": "r2_press1"
+  },
+  {
+   "run": "pilot_llama",
+   "key": "SABIN-22-M||baseline",
+   "round": "r3_press2"
+  },
+  {
+   "run": "pilot_llama",
+   "key": "SABIN-20-M||baseline",
+   "round": "r3_press2"
+  },
+  {
+   "run": "pilot_llama",
+   "key": "SABIN-08-C||baseline",
+   "round": "r1_assert"
+  },
+  {
+   "run": "pilot_llama",
+   "key": "SABIN-07-C||baseline",
+   "round": "r1_assert"
+  },
+  {
+   "run": "pilot_llama",
+   "key": "SABIN-09-C||baseline",
+   "round": "r2_press1"
+  },
+  {
+   "run": "pilot_llama",
+   "key": "SABIN-23-C||baseline",
+   "round": "r2_press1"
+  },
+  {
+   "run": "pilot_llama",
+   "key": "SABIN-27-C||baseline",
+   "round": "r3_press2"
+  },
+  {
+   "run": "pilot_llama",
+   "key": "SABIN-02-C||baseline",
+   "round": "r3_press2"
+  },
+  {
+   "run": "pilot_llama",
+   "key": "SABIN-24-M||ef",
+   "round": "r1_assert"
+  },
+  {
+   "run": "pilot_llama",
+   "key": "SABIN-09-M||ef",
+   "round": "r1_assert"
+  },
+  {
+   "run": "pilot_llama",
+   "key": "SABIN-03-M||ef",
+   "round": "r2_press1"
+  },
+  {
+   "run": "pilot_llama",
+   "key": "SABIN-28-M||ef",
+   "round": "r2_press1"
+  },
+  {
+   "run": "pilot_llama",
+   "key": "SABIN-26-M||ef",
+   "round": "r3_press2"
+  },
+  {
+   "run": "pilot_llama",
+   "key": "SABIN-08-M||ef",
+   "round": "r3_press2"
+  },
+  {
+   "run": "pilot_llama",
+   "key": "SABIN-06-C||ef",
+   "round": "r1_assert"
+  },
+  {
+   "run": "pilot_llama",
+   "key": "SABIN-22-C||ef",
+   "round": "r1_assert"
+  },
+  {
+   "run": "pilot_llama",
+   "key": "SABIN-29-C||ef",
+   "round": "r2_press1"
+  },
+  {
+   "run": "pilot_llama",
+   "key": "SABIN-16-C||ef",
+   "round": "r2_press1"
+  },
+  {
+   "run": "pilot_llama",
+   "key": "SABIN-03-C||ef",
+   "round": "r3_press2"
+  },
+  {
+   "run": "pilot_llama",
+   "key": "SABIN-21-C||ef",
+   "round": "r3_press2"
+  },
+  {
+   "run": "pilot_openai",
+   "key": "SABIN-08-M||baseline",
+   "round": "r1_assert"
+  },
+  {
+   "run": "pilot_openai",
+   "key": "SABIN-01-M||baseline",
+   "round": "r1_assert"
+  },
+  {
+   "run": "pilot_openai",
+   "key": "SABIN-18-M||baseline",
+   "round": "r2_press1"
+  },
+  {
+   "run": "pilot_openai",
+   "key": "SABIN-12-M||baseline",
+   "round": "r2_press1"
+  },
+  {
+   "run": "pilot_openai",
+   "key": "SABIN-05-M||baseline",
+   "round": "r3_press2"
+  },
+  {
+   "run": "pilot_openai",
+   "key": "SABIN-31-M||baseline",
+   "round": "r3_press2"
+  },
+  {
+   "run": "pilot_openai",
+   "key": "SABIN-29-C||baseline",
+   "round": "r1_assert"
+  },
+  {
+   "run": "pilot_openai",
+   "key": "SABIN-30-C||baseline",
+   "round": "r1_assert"
+  },
+  {
+   "run": "pilot_openai",
+   "key": "SABIN-04-C||baseline",
+   "round": "r2_press1"
+  },
+  {
+   "run": "pilot_openai",
+   "key": "SABIN-24-C||baseline",
+   "round": "r2_press1"
+  },
+  {
+   "run": "pilot_openai",
+   "key": "SABIN-16-C||baseline",
+   "round": "r3_press2"
+  },
+  {
+   "run": "pilot_openai",
+   "key": "SABIN-08-C||baseline",
+   "round": "r3_press2"
+  },
+  {
+   "run": "pilot_openai",
+   "key": "SABIN-30-M||ef",
+   "round": "r1_assert"
+  },
+  {
+   "run": "pilot_openai",
+   "key": "SABIN-12-M||ef",
+   "round": "r1_assert"
+  },
+  {
+   "run": "pilot_openai",
+   "key": "SABIN-07-M||ef",
+   "round": "r2_press1"
+  },
+  {
+   "run": "pilot_openai",
+   "key": "SABIN-15-M||ef",
+   "round": "r2_press1"
+  },
+  {
+   "run": "pilot_openai",
+   "key": "SABIN-02-M||ef",
+   "round": "r3_press2"
+  },
+  {
+   "run": "pilot_openai",
+   "key": "SABIN-05-M||ef",
+   "round": "r3_press2"
+  },
+  {
+   "run": "pilot_openai",
+   "key": "SABIN-05-C||ef",
+   "round": "r1_assert"
+  },
+  {
+   "run": "pilot_openai",
+   "key": "SABIN-23-C||ef",
+   "round": "r1_assert"
+  },
+  {
+   "run": "pilot_openai",
+   "key": "SABIN-33-C||ef",
+   "round": "r2_press1"
+  },
+  {
+   "run": "pilot_openai",
+   "key": "SABIN-01-C||ef",
+   "round": "r2_press1"
+  },
+  {
+   "run": "pilot_openai",
+   "key": "SABIN-07-C||ef",
+   "round": "r3_press2"
+  },
+  {
+   "run": "pilot_openai",
+   "key": "SABIN-06-C||ef",
+   "round": "r3_press2"
+  }
+ ]
+}
