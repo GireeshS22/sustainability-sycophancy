@@ -15,13 +15,13 @@ before starting T4.
 | ID | Reviewer | Point | Kind of work | Effort | Status |
 |----|----------|-------|--------------|--------|--------|
 | T1 | R2 | Single LLM judge, no human validation | New experiment + text | High | ☐ |
-| T2 | R2 | Justify the 13/20 "held" threshold | Free re-analysis + text | Low | ☐ |
-| T3 | R2 | Control condition is confusing | Text | Low | ☐ |
-| T4 | R2 | Publish exact prompts and router keywords | Supplementary / repo | Medium | ☐ |
-| T5 | R2 | Why grounding is kept outside the 50-point total | Text | Low | ☐ |
-| T6 | R2 | Small claim pool (33 claims, one report) | Text (reframe) | Low | ☐ |
-| T7 | R2 | Only one cross-model arbiter configuration | Text (optional run) | Low–Medium | ☐ |
-| T8 | R2 | Confirm the name "gpt-5.6-luna" | Verify + footnote | Low | ☐ (verified, text pending) |
+| T2 | R2 | Justify the 13/20 "held" threshold | Free re-analysis + text | Low | ☑ done (scripts/threshold_sensitivity.py) |
+| T3 | R2 | Control condition is confusing | Text | Low | ☑ done (scripts/control_rates.py) |
+| T4 | R2 | Publish exact prompts and router keywords | Supplementary / repo | Medium | ☑ repo line (xxx); repo still to create |
+| T5 | R2 | Why grounding is kept outside the 50-point total | Text | Low | ☑ done |
+| T6 | R2 | Small claim pool (33 claims, one report) | Text (reframe) | Low | ☑ text done |
+| T7 | R2 | Only one cross-model arbiter configuration | Text (optional run) | Low–Medium | ☑ text done, no new runs |
+| T8 | R2 | Confirm the name "gpt-5.6-luna" | Verify + footnote | Low | ☑ done ("OpenAI's" at first mention, no footnote) |
 | T9 | R1 | Abstract should be more concise | Rewrite | Low | ☐ |
 | T10 | R1 | Figure quality needs improvement | Figure polish | Medium | ☐ |
 | T11 | — | Write the response letter | Writing | Medium | ☐ |
@@ -149,10 +149,11 @@ public discourse. Acknowledge, or present as a case study.
 **Where we stand.** Limitations (`main.tex:516–520`) already acknowledges this.
 
 **Actions.**
-- [ ] Use the phrase "case study" explicitly in the abstract or introduction, so
-      the scope is clear before the reader reaches Limitations.
-- [ ] Add a future-work line on broader claim sets (e.g. fact-check databases,
-      other policy domains).
+- [x] "Case study" framing in abstract, introduction and Limitations (revision1, in 
+ev{}).
+- [x] Stated that every misconception turn is the report's verbatim public quote (checked 33/33).
+- [x] Future-work line on broader claim sets via the CARDS taxonomy (Coan et al. 2021, verified).
+- [ ] Optional, deferred: FrugalAI coverage check (what share of public claims the 33 cover).
 
 ## T7. Arbiter model ablation has one configuration (R2)
 
@@ -174,15 +175,16 @@ asking for a future-work line, not a new run.
 
 **Comment.** Verify that "gpt-5.6-luna" is the correct model name/version.
 
-**Where we stand.** Verified from the raw API responses in `logs/`: 2,126
-responses report `"model": "gpt-5.6-luna"` and 268 report `"gpt-5.6-terra"` (the
-ablation arbiter). The names are correct.
+**Where we stand.** Verified from the raw API responses in `logs/*/*.output.jsonl`:
+931 responses report `"model": "gpt-5.6-luna"` and 134 report `"gpt-5.6-terra"`
+(the ablation arbiter), all created 2026-08-08. The names are correct. (An
+earlier count of 2,126 / 268 double-counted request files; do not use it.)
 
 **Actions.**
 - [ ] Add a footnote at first mention giving the provider, the API model
       identifier as returned, and the access dates, so the reader can tell it is
       the exact identifier and not a typo.
-- [ ] Check the access dates from the log timestamps.
+- [x] Access date from the API `created` timestamps: 2026-08-08 (UTC).
 
 ## T9. Concise abstract (R1)
 

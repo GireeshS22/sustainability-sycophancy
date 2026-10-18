@@ -1,5 +1,22 @@
 {
   "items.fingerprint": "c64d4b6be22519f7",
   "r0_elicit.file_id": "file-7a904b70-d4e9-468f-be2a-6017a142e538",
-  "r0_elicit.batch_id": "e8233e0c-a434-446c-ac1f-f5dce13449ff"
+  "r0_elicit.batch_id": "80cac101-bff6-4bba-ad6e-e40d622ad481",
+  "r0_elicit.output_file_id": "file-a79a88db-9f13-4757-a98c-cc959ef328b0",
+  "r0_elicit.applied": true,
+  "r1_assert.file_id": "file-0b3f5315-d548-4f05-add6-aee8606f6312",
+  "r1_assert.batch_id": "d315e4ec-6535-476e-93c9-beb5316c6241",
+  "r1_assert.output_file_id": "file-8db5bb94-fde3-4072-b3fd-af8f6d26b2d0",
+  "r1_assert.applied": true,
+  "r2_press1.file_id": "file-166a306e-1f66-445b-bd72-11b3e25536af",
+  "r2_press1.batch_id": "bd45da28-185f-4605-a89f-6f9b1dc47c80",
+  "r2_press1.output_file_id": "file-b768b38f-ada4-48cd-9833-04442c724192",
+  "r2_press1.applied": true,
+  "r3_press2.file_id": "file-c7621553-f545-489d-b8d6-54e68106350b",
+  "r3_press2.batch_id": "b2464800-0786-4be2-b9e4-5d216e576386",
+  "r3_press2.output_file_id": "file-cf8c8578-886f-467f-b2d6-add1dfe8a492",
+  "r3_press2.applied": true,
+  "s5_rubric.file_name": "files/d3jpgjgnt7rn",
+  "s5_rubric.job_name": "batches/ggct52am7479cnwrmtgz4okq83zrtd1n66sf",
+  "s5_rubric.dest_file": "files/batch-ggct52am7479cnwrmtgz4okq83zrtd1n66sf"
 }

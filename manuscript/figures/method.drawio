@@ -1,0 +1,139 @@
+<mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/26.1.1 Chrome/132.0.6834.210 Electron/34.3.3 Safari/537.36" version="26.1.1">
+  <diagram name="Method" id="method-1">
+    <mxGraphModel dx="1985" dy="1278" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1660" pageHeight="830" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="hr1" value="" style="line;strokeWidth=6;html=1;strokeColor=#1baf7a;" parent="1" vertex="1">
+          <mxGeometry x="40" y="106" width="220" height="10" as="geometry" />
+        </mxCell>
+        <mxCell id="h1" value="1  Items" style="text;html=1;fontSize=30;fontStyle=1;fontColor=#0b0b0b;align=left;verticalAlign=bottom;" parent="1" vertex="1">
+          <mxGeometry x="40" y="60" width="220" height="44" as="geometry" />
+        </mxCell>
+        <mxCell id="hr2" value="" style="line;strokeWidth=6;html=1;strokeColor=#eda100;" parent="1" vertex="1">
+          <mxGeometry x="300" y="106" width="940" height="10" as="geometry" />
+        </mxCell>
+        <mxCell id="h2" value="2  Four-turn conversation, run once per arm" style="text;html=1;fontSize=30;fontStyle=1;fontColor=#0b0b0b;align=left;verticalAlign=bottom;" parent="1" vertex="1">
+          <mxGeometry x="300" y="60" width="940" height="44" as="geometry" />
+        </mxCell>
+        <mxCell id="hr3" value="" style="line;strokeWidth=6;html=1;strokeColor=#4a3aa7;" parent="1" vertex="1">
+          <mxGeometry x="1280" y="106" width="340" height="10" as="geometry" />
+        </mxCell>
+        <mxCell id="h3" value="3  Scoring" style="text;html=1;fontSize=30;fontStyle=1;fontColor=#0b0b0b;align=left;verticalAlign=bottom;" parent="1" vertex="1">
+          <mxGeometry x="1280" y="60" width="340" height="44" as="geometry" />
+        </mxCell>
+        <mxCell id="d1" value="Sabin Center&lt;br&gt;report" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e6f6ef;strokeColor=#1baf7a;strokeWidth=3;fontSize=26;fontColor=#0b0b0b;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="40" y="140" width="220" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="d2" value="33 claims&lt;br&gt;&lt;font style=&quot;font-size:22px;&quot;&gt;false and true&lt;br&gt;version of each&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e6f6ef;strokeColor=#1baf7a;strokeWidth=3;fontSize=26;fontColor=#0b0b0b;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="40" y="290" width="220" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="d3" value="66 items&lt;br&gt;&lt;font style=&quot;font-size:22px;&quot;&gt;33 misconception&lt;br&gt;33 control&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1baf7a;strokeColor=#1baf7a;strokeWidth=3;fontSize=26;fontColor=#ffffff;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="40" y="460" width="220" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="ed1" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#1baf7a;strokeWidth=3;endArrow=block;endFill=1;" parent="1" source="d1" target="d2" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="ed2" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#1baf7a;strokeWidth=3;endArrow=block;endFill=1;" parent="1" source="d2" target="d3" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="t0" value="T0&lt;br&gt;&lt;font style=&quot;font-size:22px;&quot;&gt;neutral question&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fdf1d9;strokeColor=#eda100;strokeWidth=3;fontSize=26;fontColor=#0b0b0b;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="300" y="140" width="220" height="86" as="geometry" />
+        </mxCell>
+        <mxCell id="t1" value="T1&lt;br&gt;&lt;font style=&quot;font-size:22px;&quot;&gt;asserts the claim&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fdf1d9;strokeColor=#eda100;strokeWidth=3;fontSize=26;fontColor=#0b0b0b;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="540" y="140" width="220" height="86" as="geometry" />
+        </mxCell>
+        <mxCell id="t2" value="T2&lt;br&gt;&lt;font style=&quot;font-size:22px;&quot;&gt;social doubt&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fdf1d9;strokeColor=#eda100;strokeWidth=3;fontSize=26;fontColor=#0b0b0b;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="780" y="140" width="220" height="86" as="geometry" />
+        </mxCell>
+        <mxCell id="t3" value="T3&lt;br&gt;&lt;font style=&quot;font-size:22px;&quot;&gt;authority appeal&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fdf1d9;strokeColor=#eda100;strokeWidth=3;fontSize=26;fontColor=#0b0b0b;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="1020" y="140" width="220" height="86" as="geometry" />
+        </mxCell>
+        <mxCell id="lab_b" value="Baseline arm" style="text;html=1;fontSize=26;fontStyle=1;fontColor=#eb6834;align=left;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="300" y="248" width="600" height="34" as="geometry" />
+        </mxCell>
+        <mxCell id="b0" value="A0  primary" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fdece4;strokeColor=#eb6834;strokeWidth=3;fontSize=26;fontColor=#0b0b0b;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="300" y="288" width="220" height="76" as="geometry" />
+        </mxCell>
+        <mxCell id="b1" value="A1  primary" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fdece4;strokeColor=#eb6834;strokeWidth=3;fontSize=26;fontColor=#0b0b0b;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="540" y="288" width="220" height="76" as="geometry" />
+        </mxCell>
+        <mxCell id="b2" value="A2  primary" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fdece4;strokeColor=#eb6834;strokeWidth=3;fontSize=26;fontColor=#0b0b0b;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="780" y="288" width="220" height="76" as="geometry" />
+        </mxCell>
+        <mxCell id="b3" value="A3  primary" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fdece4;strokeColor=#eb6834;strokeWidth=3;fontSize=26;fontColor=#0b0b0b;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="1020" y="288" width="220" height="76" as="geometry" />
+        </mxCell>
+        <mxCell id="lab_a" value="Baseline + arbiter arm" style="text;html=1;fontSize=26;fontStyle=1;fontColor=#2a78d6;align=left;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="300" y="388" width="600" height="34" as="geometry" />
+        </mxCell>
+        <mxCell id="a0" value="A0  primary" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fdece4;strokeColor=#eb6834;strokeWidth=3;fontSize=26;fontColor=#0b0b0b;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="300" y="428" width="220" height="76" as="geometry" />
+        </mxCell>
+        <mxCell id="a1" value="A1  primary&lt;br&gt;&lt;font style=&quot;font-size:20px;&quot;&gt;64 of 66 items&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fdece4;strokeColor=#eb6834;strokeWidth=3;fontSize=26;fontColor=#0b0b0b;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="540" y="428" width="220" height="76" as="geometry" />
+        </mxCell>
+        <mxCell id="a2" value="A2  arbiter" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#2a78d6;strokeColor=#2a78d6;strokeWidth=3;fontSize=26;fontColor=#ffffff;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="780" y="428" width="220" height="76" as="geometry" />
+        </mxCell>
+        <mxCell id="a3" value="A3  arbiter" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#2a78d6;strokeColor=#2a78d6;strokeWidth=3;fontSize=26;fontColor=#ffffff;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="1020" y="428" width="220" height="76" as="geometry" />
+        </mxCell>
+        <mxCell id="note" value="Router: a user turn carrying a contradiction keyword goes to the arbiter prompt. In practice this is exactly the two pressure turns, so the arms are the same system until T2." style="text;html=1;whiteSpace=wrap;fontSize=22;fontColor=#52514e;align=left;verticalAlign=top;" parent="1" vertex="1">
+          <mxGeometry x="300" y="520" width="940" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="scored" value="scored turns  —  A1, A2, A3" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#0b0b0b;strokeWidth=3;dashed=1;dashPattern=8 6;fontSize=24;fontColor=#0b0b0b;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="540" y="586" width="700" height="54" as="geometry" />
+        </mxCell>
+        <mxCell id="s1" value="Judge&lt;br&gt;&lt;font style=&quot;font-size:22px;&quot;&gt;gemini-2.5-flash,&lt;br&gt;same in every run&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ebe9f7;strokeColor=#4a3aa7;strokeWidth=3;fontSize=26;fontColor=#0b0b0b;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="1280" y="140" width="340" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="s2" value="One JSON call&lt;br&gt;per scored turn&lt;br&gt;&lt;font style=&quot;font-size:22px;&quot;&gt;D1 /20  D3 /10&lt;br&gt;D4 /10  D5 /10  GS /10&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ebe9f7;strokeColor=#4a3aa7;strokeWidth=3;fontSize=26;fontColor=#0b0b0b;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="1280" y="300" width="340" height="140" as="geometry" />
+        </mxCell>
+        <mxCell id="s3" value="Epistemic score  0–50" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#4a3aa7;strokeColor=#4a3aa7;strokeWidth=3;fontSize=26;fontColor=#ffffff;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="1280" y="490" width="340" height="66" as="geometry" />
+        </mxCell>
+        <mxCell id="s4" value="Grounding score  0–10" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#4a3aa7;strokeWidth=3;fontSize=26;fontColor=#0b0b0b;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="1280" y="574" width="340" height="66" as="geometry" />
+        </mxCell>
+        <mxCell id="es1" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#4a3aa7;strokeWidth=3;endArrow=block;endFill=1;" parent="1" source="s1" target="s2" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="es2" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#4a3aa7;strokeWidth=3;endArrow=block;endFill=1;" parent="1" source="s2" target="s3" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="eA" value="× 2 arms" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#0b0b0b;strokeWidth=4;endArrow=block;endFill=1;fontSize=22;fontColor=#0b0b0b;labelBackgroundColor=#ffffff;verticalAlign=bottom;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="266" y="515" as="sourcePoint" />
+            <mxPoint x="296" y="515" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="eB" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#0b0b0b;strokeWidth=4;endArrow=block;endFill=1;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1244" y="613" as="sourcePoint" />
+            <mxPoint x="1276" y="613" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="hr4" value="" style="line;strokeWidth=6;html=1;strokeColor=#52514e;" parent="1" vertex="1">
+          <mxGeometry x="40" y="702" width="1580" height="10" as="geometry" />
+        </mxCell>
+        <mxCell id="h4" value="4  Four runs, identical items and judge" style="text;html=1;fontSize=30;fontStyle=1;fontColor=#0b0b0b;align=left;verticalAlign=bottom;" parent="1" vertex="1">
+          <mxGeometry x="40" y="656" width="900" height="44" as="geometry" />
+        </mxCell>
+        <mxCell id="r1" value="&lt;b&gt;Run 1&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:21px;&quot;&gt;gemini-2.5-flash · arbiter same&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#52514e;strokeWidth=3;fontSize=24;fontColor=#0b0b0b;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="40" y="732" width="380" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="r2" value="&lt;b&gt;Run 2&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:21px;&quot;&gt;gpt-5.6-luna · arbiter same&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#52514e;strokeWidth=3;fontSize=24;fontColor=#0b0b0b;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="440" y="732" width="380" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="r3" value="&lt;b&gt;Run 3&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:21px;&quot;&gt;Llama-3.3-70B · arbiter same&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#52514e;strokeWidth=3;fontSize=24;fontColor=#0b0b0b;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="840" y="732" width="380" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="r4" value="&lt;b&gt;Run 4 · ablation&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:21px;&quot;&gt;luna · arbiter terra&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e3eefb;strokeColor=#2a78d6;strokeWidth=3;fontSize=24;fontColor=#0b0b0b;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="1240" y="732" width="380" height="70" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

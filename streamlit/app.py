@@ -202,10 +202,20 @@ def render_score_tab(rater_id: str):
         return
 
     st.subheader("Your scores")
+    # Hide the -/+ stepper buttons and the x (clear) button so Tab goes straight
+    # from one score box to the next.
+    st.markdown(
+        "<style>[data-testid='stNumberInputStepUp'],"
+        "[data-testid='stNumberInputStepDown'],"
+        "[data-testid='stNumberInputContainer'] [aria-label='Clear value']"
+        "{display:none !important;}</style>",
+        unsafe_allow_html=True,
+    )
     with st.form("score_form"):
         values = {}
         for r in RUBRIC:
-            with st.expander(f"{r['label']} (0–{r['max']})", expanded=True):
+            with st.container():
+                st.markdown(f"**{r['label']} (0–{r['max']})**")
                 st.caption(r["description"])
                 st.markdown("\n".join(f"- **{band}**: {desc}" for band, desc in r["guide"]))
                 values[r["key"]] = st.number_input(

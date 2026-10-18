@@ -17,3 +17,6 @@ data/raw/sabin/*.pdf
 data/raw/frugalai/*.parquet
 data/interim/sabin_raw.txt
 data/interim/*.parquet
+
+# second-judge batch payload (rebuildable with `scripts/second_judge.py prepare`)
+logs/second_judge/requests.jsonl
