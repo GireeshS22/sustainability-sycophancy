@@ -1,0 +1,648 @@
+\documentclass[conference]{IEEEtran}
+\IEEEoverridecommandlockouts
+
+\usepackage{cite}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{amsthm}
+\usepackage{algorithmic}
+\usepackage{graphicx}
+\usepackage{textcomp}
+\usepackage{xcolor}
+\usepackage{colortbl}   % cell shading in Table III
+% Table III styling: arbiter columns shaded, ablation row tinted, SDs faded.
+\definecolor{arbcol}{RGB}{226,236,250}
+\definecolor{ablrow}{RGB}{252,240,222}
+\newcommand{\sd}[1]{{\color{gray}\scriptsize(#1)}}
+\usepackage{url}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{float}
+\usepackage[most]{tcolorbox}
+
+\newenvironment{findingBox}[2]{%
+    \begin{tcolorbox}[
+        colframe=black!80, colback=gray!10, boxrule=0.4mm, arc=2mm,
+        left=1pt, right=1pt, top=0pt, bottom=0pt, size=small,
+        fonttitle=\bfseries, coltitle=black
+    ]{\textbf{Finding #1:} #2}
+}{%
+    \end{tcolorbox}
+}
+
+
+\def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
+    T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
+
+% Double-blind toggle: \blindreviewtrue for anonymous submission,
+% \blindreviewfalse for camera-ready. Flip this one line only.
+\newif\ifblindreview
+\blindreviewtrue
+
+% Revision marker: wrap text added or changed in revision 1 in \rev{...} so
+% reviewers can find every change. A colour group rather than \textcolor, so
+% the argument can span several paragraphs. \revmarksfalse turns all of it
+% black for the camera-ready version without touching the text.
+\newif\ifrevmarks
+\revmarkstrue
+\ifrevmarks
+  \newcommand{\rev}[1]{{\color{blue}#1}}
+\else
+  \newcommand{\rev}[1]{#1}
+\fi
+
+\begin{document}
+
+\title{Evaluating and Mitigating Sycophancy in LLMs for Sustainability Claims}
+
+\ifblindreview
+ \author{
+ \IEEEauthorblockN{Anonymous Author(s)}
+ \IEEEauthorblockA{Affiliation withheld for review}
+ }
+\else
+ \author{
+ \IEEEauthorblockN{Gireesh Sundaram}
+ \IEEEauthorblockA{\textit{Shiv Nadar University Chennai,} \\
+ Chennai, India. \\
+ gireesh23610036@snuchennai.edu.in}
+ \and
+ \IEEEauthorblockN{Balaji Venktesh V}
+ \IEEEauthorblockA{\textit{Shiv Nadar University Chennai,} \\
+ Chennai, India. \\
+ balaji23610040@snuchennai.edu.in}
+ \and
+ \IEEEauthorblockN{Sundharakumar K B}
+ \IEEEauthorblockA{\textit{Shiv Nadar University Chennai,} \\
+ Chennai, India. \\
+ sundharakumarkb@snuchennai.edu.in}
+ }
+\fi
+
+\maketitle
+
+\begin{abstract}
+Language models trained on human preferences tend to abandon correct answers
+when a user pushes back, a failure that carries real cost in public discussion
+of renewable energy, where documented misconceptions about solar, wind and
+electric vehicles circulate widely and are increasingly brought to
+conversational assistants to be checked. We ask whether current models
+capitulate on such claims, whether an arbiter architecture developed for
+software engineering reduces that capitulation in this domain, and which part of
+the architecture is responsible. \rev{In a case study built on} a Columbia Law
+School report rebutting 33 false claims about solar, wind and electric vehicles,
+\rev{each false claim is put to the model in the words of a real public
+statement the report cites, and} each claim yields one item asserting the
+falsehood and one asserting the documented truth.
+All 66 run through a four-turn conversation that elicits the model's position,
+then applies two rounds of user pressure.
+Replies were graded on a 50-point epistemic rubric by a judge model
+held fixed across runs. Baseline agents held a correct position through both
+pressure rounds on 33\% of items with Gemini 2.5 Flash, 9\% with \rev{OpenAI's} gpt-5.6-luna
+and none at all with Llama-3.3-70B; on control items, where the user's
+\rev{original claim} was right,
+two of the three models held on 3\% or fewer. An arbiter stage improved every
+model ($d=1.86$, $0.72$ and $1.31$) without degrading performance when users
+were correct, and on the one model also evaluated in the original software
+engineering study it performed better here than there ($d=1.06$ versus $0.43$ at
+a matched pressure turn). Holding the primary model fixed, 31\% of the gain came
+from the routing architecture and 69\% from replacing the model in the arbiter
+role. Arbiter choice therefore dominates architecture, and effect sizes reported
+without naming the arbiter cannot be interpreted.
+\end{abstract}
+
+\begin{IEEEkeywords}
+sycophancy, large language models, renewable energy misinformation, multi-agent
+systems, epistemic robustness, sustainable engineering
+\end{IEEEkeywords}
+
+% ============================================================================
+% I. INTRODUCTION
+% ============================================================================
+\section{Introduction}
+
+Large language models tend towards sycophancy. When a user pushes back on an
+answer, the model is more likely to move towards the user's position than to
+defend a correct one. This behaviour has been attributed to reinforcement
+learning from human feedback, which rewards responses that people rate
+favourably and so places agreeableness in competition with
+accuracy~\cite{sharma2023towards}.
+
+Sustainable engineering is a domain where that trade-off carries a real cost.
+Public discussion of solar, wind and electric vehicles is crowded with specific,
+well-documented misconceptions: that solar farms emit electromagnetic fields
+harmful to health, that wind turbines never repay the energy used to build them,
+that electric vehicles are dirtier over their lifetime than petrol cars. People
+increasingly bring such claims to a conversational assistant to check
+them~\cite{ARSLAN2024114827,ZHANG2026127076}. An
+assistant that gives way to a confident user stops correcting the record and
+starts confirming it, and it does so in a setting where the reader may be
+weighing an actual planning, procurement or policy decision.
+
+This paper asks three things: whether the failure happens, whether an existing
+architectural remedy carries over to this domain, and what inside that remedy is
+doing the work. \rev{This is a case study of one documented claim inventory.}
+We test three models from different families on all 33 documented
+misconceptions catalogued in a legal-academic review, rather than a sample
+drawn from a larger pool, \rev{each put to the model in the words of a public
+statement the review cites,} using a protocol that first
+elicits each model's own position and then applies two escalating rounds of user
+pressure. One of the three, Llama-3.3-70B, was also evaluated in the original
+software engineering study, which lets the same model and the same architecture
+be compared across two domains. Against that baseline we evaluate the Epistemic
+Fortitude architecture, which routes turns where the user contradicts the
+assistant to a separate arbiter prompt, and we run it in two configurations to
+separate the routing itself from the model placed in the arbiter role.
+
+\begin{itemize}
+    \item \textbf{RQ1:} How readily do current models abandon a correct position
+    on a documented sustainability misconception when a user pushes back, and
+    does the pattern differ between models?
+    \item \textbf{RQ2:} Does adding an arbiter stage reduce that capitulation in
+    the sustainability domain, and does it do so without causing the model to
+    resist users who are right?
+    \item \textbf{RQ3:} Where the arbiter stage helps, how much of the benefit
+    comes from the routing architecture itself and how much from the choice of
+    model that fills the arbiter role?
+\end{itemize}
+
+
+\begin{figure*}[!ht]
+\centering
+\includegraphics[width=\textwidth]{figures/method}
+\caption{Experimental pipeline. The arms differ only in who answers: the
+baseline uses the primary prompt throughout, while a keyword router hands
+contradiction turns to the arbiter prompt. The router fired on both pressure
+turns and almost never earlier, so the arms are the same system until T2. All
+four runs share the same items and judge.}
+\label{fig:method}
+\end{figure*}
+
+% ============================================================================
+% II. BACKGROUND AND PROBLEM SETUP
+% ============================================================================
+\section{Background and Related Work}
+\label{sec:background}
+
+\textbf{Sycophancy and how it differs from related failures.} Sharma et
+al.~\cite{sharma2023towards} showed that assistants trained with human-preference
+feedback systematically shift towards a user's stated view, and traced the effect
+to preference data in which people reward agreement. The failure is distinct from
+hallucination, which is the fabrication of content in the absence of any
+pressure~\cite{ji2023survey}; here the model produces the correct answer first
+and then withdraws it. It is also distinct from the consistency studied by Elazar
+et al.~\cite{elazar2021measuring}, who measure whether a model gives the same
+answer to paraphrases of one question. That is invariance to how a question is
+asked, whereas what matters under contradiction is whether an answer survives
+being challenged. Our setting is closest to faithful information-seeking
+dialogue~\cite{dziri2022faithdial}, with the difference that the threat to
+faithfulness is the user rather than the model's own drift.
+
+\textbf{Remedies operate at different levels.} One family supplies better
+evidence at inference time, as in retrieval-augmented
+generation~\cite{lewis2020retrieval,electronics15040749}. A second changes what the model knows,
+either by locating and rewriting factual associations~\cite{meng2022locating} or
+by attaching an editable memory~\cite{mitchell2022fast}. Both address cases where
+the model is wrong. Neither speaks to the case examined here, in which the model
+is right, says so, and then abandons the position; the evidence needed was
+already present in its own earlier turn. A third family therefore intervenes on
+the interaction itself. Epistemic Fortitude~\cite{SUNDARAM2027105031} separates
+epistemic oversight from conversational fluency, routing contradiction turns to
+an arbiter agent that re-examines the dispute and defends the earlier answer when
+it holds up. Evaluated on 300 software-engineering conversations across four
+model families, it improved outcomes in every case, with effect sizes varying
+widely by model. We take that architecture as given and ask whether it survives a
+change of domain, and which of its parts is responsible.
+
+\textbf{Sustainability as a test domain.} Work on sycophancy has concentrated on
+general question answering and, more recently, on software
+engineering~\cite{SUNDARAM2027105031}, where a wrong answer produces a failing
+test. Sustainable engineering differs in a way that matters for measurement: the
+misconceptions are catalogued, numerous and contested in public, and the correct
+positions are documented by third parties rather than by the experimenter. That
+makes it possible to test capitulation against claims a model will genuinely
+encounter, and to do so without the authors deciding what counts as
+true~\cite{eisenson2024rebutting}.
+
+
+
+% ============================================================================
+% II. BACKGROUND AND PROBLEM SETUP
+% ============================================================================
+\section{Methods}
+\label{sec:methods}
+Fig.~\ref{fig:method} summarises the pipeline. This section explains the choices
+behind it.
+
+\textbf{Items.} Claims are taken from a Columbia Law School report that
+catalogues and rebuts 33 widespread false statements about solar, wind and
+electric vehicles, each answered with citations to primary technical and
+regulatory sources~\cite{eisenson2024rebutting}. Using a published catalogue
+rather than authoring our own claims matters for two reasons: these claims
+circulate in real public debate, and their rebuttals are documented
+independently of this study, so the correct answer is not ours to decide.
+\rev{In each misconception item, the user's message to the model is a real
+public statement quoted in the report, not text written by us or by the
+report's authors.} Each
+of the 33 claims yields two items. In the
+\emph{misconception} item the user asserts the false version; in the
+\emph{control} item the user asserts the true version\rev{, a single sentence
+restating the report's rebuttal in the same length and register as the false
+claim, so that the paired items differ only in whether the user is
+right. The opening questions and control sentences were generated by
+Gemini~2.5 Flash from the report's claim and rebuttal; the prompt is in the
+released repository.} The control
+items exist to separate two behaviours that look alike from the outside: an
+assistant that resists pressure because it is right, and one that has merely been
+made stubborn. A mechanism that only teaches disagreement should degrade on
+control items, where the user is correct. This gives 66 items in total, covering
+15 wind, 14 solar and 4 electric-vehicle claims.
+
+\textbf{Protocol.} Each item runs as a four-turn conversation. The first turn
+asks a neutral question and records the model's unprompted position; only then
+does the user assert the claim (A1). Eliciting first is what makes this a measurement
+of sycophancy rather than of accuracy, because capitulation is scored against the
+position the model itself took a turn earlier. Two rounds of pressure follow
+(A2, A3), escalating from social doubt (``Are you sure about that? That really doesn't
+match what I've read.'') to an appeal to authority and consensus (``I work in
+this field \ldots{} everyone I work with would disagree with you.''). Two rounds
+are used rather than one because the models do not fail at the same point, as
+Section~\ref{sec:results} shows. The pressure wording is fixed and identical
+across conditions, so the only difference between a misconception item and its
+control is the truth value of what the user asserted.
+Fig.~\ref{fig:example} shows the protocol running end to end on one item.
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=\columnwidth]{figures/example}
+\caption{The protocol on one item, \texttt{SABIN-06-M} (solar), with Gemini 2.5
+Flash. Text is verbatim; ellipses mark abridgements. Both arms answer A1
+identically and hold through social doubt. The appeal to authority separates
+them: the baseline restates the user's claim as its own conclusion, scoring zero
+on all four dimensions. Badges give the epistemic score defined below.}
+\label{fig:example}
+\end{figure}
+
+\textbf{Arms and routing.} Every item is run twice. The baseline arm answers all
+four turns with a single assistant prompt. The second arm is identical except
+that a router inspects each user turn and, when it carries contradiction
+language, answers with an arbiter prompt instead --- a fact-checking role
+instructed to review the dispute, judge the engineering facts independently, and
+defend the earlier answer where it was correct. The router reimplements the
+keyword tiers of the Epistemic Fortitude architecture~\cite{SUNDARAM2027105031} as a
+deterministic function, and its decision is logged for every turn so that the
+invocation rate is reported rather than assumed.
+
+\textbf{Scoring.} A judge model grades each scored turn in a single call that
+returns structured JSON. Four dimensions are carried over unchanged from the
+published Epistemic Fortitude rubric --- epistemic responsibility (0--20),
+apology and deference (0--10, reverse-coded), confidence and assertiveness
+(0--10), and defence quality (0--10) --- and summed into a 50-point
+\emph{epistemic score}. The rubric's remaining dimension, a generic measure of
+rationale quality, is replaced here by a domain-specific \emph{grounding score}
+(0--10) recording whether the answer used concrete engineering evidence such as
+capacity factors, energy payback times or lifecycle emissions. Grounding is
+reported separately and never added into the total, which keeps the 50-point
+scale directly comparable with published results. \rev{It also measures a
+different property: a reply can cite capacity factors and still give way, or hold
+firm with no evidence, and adding the two would hide exactly those cases.} For the survival analysis only,
+a turn counts as held when epistemic responsibility reaches 13 of 20\rev{, the
+lower edge of the rubric's own ``right action, minor flaws'' band rather than a
+tuned value. At a threshold of 10 or 17 the arbiter arm still has the higher
+never-caved rate in all eight run-by-condition comparisons; the log-rank test
+stays significant in all eight at 10 and in six at 17, where both Llama
+comparisons lose significance because few Llama turns in either arm reach 17}. The judge
+is \texttt{gemini-2.5-flash} at temperature zero in every run, including those
+whose conversations were generated by other models: holding the judge fixed is
+what allows separately generated corpora to share one scale.
+\rev{Because Gemini is also one of the models under test, a second judge from
+a model family not under test, Claude Haiku 5.5, rescored every turn with the same prompt,
+and one author scored a stratified sample of 96 turns blind to model and arm.
+Results are reported under \texttt{gemini-2.5-flash} (Judge~1); Judge~2 and the
+human rater reach the same conclusions (Table~\ref{tab:judge}).}
+
+\begin{table}[!ht]
+\caption{How the design multiplies out; each row is the one above it times the
+factor named. Of 2{,}112 assistant turns called for, three were lost to
+truncated API responses and their items excluded rather than imputed.}
+\label{tab:scale}
+\centering
+\small
+\begin{tabular}{lrl}
+\toprule
+Quantity & Count & Multiplier \\
+\midrule
+Documented claims        & 33    & from the source report \\
+Items                    & 66    & $\times\,2$ conditions \\
+Conversations per run    & 132   & $\times\,2$ arms \\
+Conversations            & 528   & $\times\,4$ runs \\
+\midrule
+Assistant turns          & 2{,}109 & $\times\,4$ turns each \\
+Scored turns             & 1{,}584 & $\times\,3$ scored per conv. \\
+Dimension ratings        & 7{,}920 & $\times\,5$ per scored turn \\
+\midrule
+\textbf{Total model calls} & \textbf{3{,}693} & generation $+$ judging \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[!ht]
+\caption{\rev{The three scorers. ICC and $\kappa_w$: agreement with Judge~1 on
+the epistemic score and on epistemic responsibility, against a gate set before
+rating (0.70 and 0.60). Gain: arbiter minus baseline on the 96-turn sample.
+Split: routing versus arbiter-model share of the gain. A second rater, excluded
+for not applying the rubric, is in the released data.}}
+\label{tab:judge}
+\centering
+\small
+\rev{%
+\begin{tabular}{lrcccc}
+\toprule
+Scorer & $n$ & ICC & $\kappa_w$ & Gain & Split \\
+\midrule
+Judge 1 (Gemini) & 1{,}584 & ---  & ---  & $+9.8$ & 31/69 \\
+Judge 2 (Claude) & 1{,}584 & 0.85 & 0.78 & $+6.4$ & 28/72 \\
+Human (author)   & 96      & 0.82 & 0.78 & $+8.1$ & ---   \\
+\bottomrule
+\end{tabular}}
+\end{table}
+
+\textbf{Runs and analysis.} Four configurations were run over the same items:
+three with the arbiter on the same model as the primary --- \texttt{gemini-2.5-flash},
+\rev{OpenAI's} \texttt{gpt-5.6-luna} and \texttt{Llama-3.3-70B-Instruct-Turbo} --- and one
+ablation with the arbiter on a different model\rev{, OpenAI's
+\texttt{gpt-5.6-terra} behind a luna primary}. Each run yields 132
+conversations and 396 scored turns, and the design multiplies out to 3{,}693
+model calls in total (Table~\ref{tab:scale}). Comparisons are paired by item and
+tested with the Wilcoxon signed-rank
+test, the scores being bounded and strongly skewed towards the ceiling in the
+arbiter arms. Effect sizes are Cohen's $d$ on the pooled standard deviation,
+following the original study's convention; confidence intervals are percentile
+bootstrap over 10{,}000 resamples of the paired differences. Turns-to-failure are
+compared with the log-rank test, with conversations that never fail treated as
+censored. Conversations that lost a turn to a truncated API response are excluded
+from the paired analysis rather than imputed. \rev{All prompts (primary, arbiter,
+item generation and judge rubric), the router keyword lists, the conversations
+and the judge scores are released open source at
+\url{https://github.com/xxx/sustainability-sycophancy}.}
+
+
+
+% ============================================================================
+% V. RESULTS
+% ============================================================================
+\section{Results}
+\label{sec:results}
+
+\begin{figure*}[!ht]
+\centering
+\includegraphics[width=\textwidth]{figures/trajectory}
+\caption{Epistemic score (top) and grounding score (bottom) by turn,
+misconception condition, $\pm1$ SE. Numbers above each turn are Cohen's $d$ for
+the paired difference (\textsuperscript{ns}~$p\geq0.05$, *~$p<0.05$,
+**~$p<0.01$, ***~$p<0.001$). The first three columns run the arbiter on the
+primary's own model; the fourth substitutes a different one.}
+\label{fig:trajectory}
+\end{figure*}
+
+\begin{table*}[!ht]
+\caption{Scores after both pressure rounds (A3), misconception condition.
+Epistemic cells give mean (SD); grounding is reported outside the total;
+``never caved'' is the share holding at all three turns. Paired Wilcoxon
+signed-rank, $d$ on pooled SD: *~$p<0.05$, **~$p<0.01$, ***~$p<0.001$. Ratios
+are omitted because Llama's baseline sits at the floor. The lower block pools
+the three same-model runs, so each claim recurs once per run and those rows are
+descriptive, not independent; EV rests on four claims.}
+\label{tab:main}
+\centering
+\small
+\setlength{\tabcolsep}{6.5pt}
+\begin{tabular}{lc c>{\columncolor{arbcol}}crc c>{\columncolor{arbcol}}cc c>{\columncolor{arbcol}}c}
+\toprule
+ & & \multicolumn{4}{c}{Epistemic score (0--50)} & \multicolumn{3}{c}{Grounding score (0--10)} & \multicolumn{2}{c}{Never caved} \\
+\cmidrule(lr){3-6}\cmidrule(lr){7-9}\cmidrule(lr){10-11}
+ & $n$ & Base & $+$\,Arb & $\Delta$ & $d$ & Base & $+$\,Arb & $d$ & Base & $+$\,Arb \\
+\midrule
+\multicolumn{11}{l}{\textbf{By model}} \\
+Gemini 2.5 Flash & 33 & 23.88 \sd{14.70} & 43.30 \sd{1.67}  & $\mathbf{+19.42}$ & 1.86*** & 5.18 & 8.18 & 1.20*** & \textbf{33\%} & \textbf{79\%} \\
+gpt-5.6-luna     & 33 & 11.88 \sd{9.68}  & 21.12 \sd{15.28} & $\mathbf{+9.24}$  & 0.72**  & 6.39 & 6.85 & 0.24\phantom{***} & \textbf{9\%}  & \textbf{42\%} \\
+Llama-3.3-70B    & 33 &  3.45 \sd{4.78}  & 17.12 \sd{13.99} & $\mathbf{+13.67}$ & 1.31*** & 0.03 & 0.30 & 0.35\phantom{***} & \textbf{0\%}  & \textbf{30\%} \\
+\addlinespace[2pt]
+\multicolumn{11}{l}{\quad\textit{ablation: arbiter on a different model}} \\
+\rowcolor{ablrow}
+luna $\rightarrow$ terra & 32 & 10.00 \sd{11.18} & 42.84 \sd{8.01} & $\mathbf{+32.84}$ & 3.38*** & 6.69 & 8.16 & 1.46*** & 6\% & \textbf{94\%} \\
+\midrule
+\multicolumn{11}{l}{\textbf{By claim technology}, pooled over the three same-model runs} \\
+Solar & 42 & 11.52 \sd{13.33} & 25.24 \sd{17.69} & $+13.71$ & 0.88*** & 3.48 & 5.24 & 0.49*** & 10\% & 55\% \\
+Wind  & 45 & 13.96 \sd{13.99} & 28.42 \sd{16.11} & $+14.47$ & 0.96*** & 4.13 & 4.89 & 0.21*   & 16\% & 47\% \\
+EV    & 12 & 15.17 \sd{11.72} & 29.33 \sd{14.85} & $+14.17$ & 1.06**  & 4.25 & 5.50 & 0.32\phantom{***} & 25\% & 50\% \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+\textbf{Baseline behaviour.} After both pressure rounds the baseline agent
+scored 23.88 out of 50 on Gemini 2.5 Flash, 11.88 on gpt-5.6-luna and 3.45 on
+Llama-3.3-70B (Table~\ref{tab:main}). It held the correct position at all three
+turns on 33\% of Gemini items, 9\% of luna items and no Llama item. On the
+control items, where the user \rev{first} asserts the true claim \rev{and
+then turns against it}, the corresponding rates
+were 45\%, 3\% and again zero; the ablation run gave 12\%. \rev{These control
+failures were not disagreements from the outset. At first assertion the
+baseline affirmed the true claim on 88 to 94\% of control items in every run,
+and disputed it outright (epistemic responsibility of 4 or less) on at most two
+items per run. The failures came under pressure: at the social-doubt turn for
+luna and Llama (24 of 32 and 29 of 33 conversations) and at the appeal to
+authority for Gemini (13 of 33).} Median
+time-to-failure was A3 on Gemini and A2 in every other run. On Llama, 21
+of the 33 baseline conversations finished with a score of zero on every scored
+dimension, and the highest epistemic-responsibility score awarded at the final
+turn was 5 of 20 against a holding threshold of 13. The Gemini conversation in
+Fig.~\ref{fig:example} ends the same way, scoring zero on all four dimensions
+after having defended the same position two turns earlier.
+
+\textbf{Effect of the arbiter stage.} Routing contradiction turns to the arbiter
+raised the epistemic score by 19.42 points on Gemini (95\% CI
+$[+14.61, +24.27]$, $d=1.86$), by 9.24 points on luna ($d=0.72$) and by 13.67
+points on Llama ($[+9.67, +17.79]$, $d=1.31$); all three are significant at
+$p<0.01$. Item-level differences favoured the arbiter arm on 31 of 33 Gemini
+items, 24 of 33 luna items and 23 of 33 Llama items, the Llama remainder being
+nine ties at the floor. Never-caved rates rose from 33\% to 79\%, 9\% to 42\%
+and 0\% to 30\%. Log-rank tests on time-to-failure were significant in every run
+and condition except Llama's control items ($\chi^2 = 6.2$ to $50.2$,
+$p<0.05$; Llama control $\chi^2 = 3.50$, $p=0.061$). Effects were of similar
+size across the four scored dimensions within each run; on Gemini they ranged
+from $d=1.75$ to $d=1.98$ and on Llama from $d=1.09$ to $d=1.34$. The gain did
+not depend on the technology under discussion (Table~\ref{tab:main}): pooled
+over the same-model runs, solar, wind and EV claims moved by $+13.71$, $+14.47$
+and $+14.17$ points, a spread of well under one point.
+
+\textbf{Turn-level pattern.} Routing was identical in all four runs: the
+arbiter answered both pressure turns on all 66 items, while the
+first assertion stayed on the primary prompt for 64 of 66 items and the elicit
+turn for all 66. The two arms are therefore the same system until the first
+pressure turn, and the comparison at first assertion serves as a manipulation
+check. It behaves as expected: the arms did not differ there in any run, on
+either measure, with $d=-0.10$, $+0.10$, $+0.09$ and $+0.12$ for the epistemic
+score and $+0.08$, $-0.03$, $+0.17$ and $-0.02$ for grounding, none significant
+(Fig.~\ref{fig:trajectory}). Separation emerged at the first pressure turn and
+was largest at the second. The baselines fell at different points: Gemini moved
+from 37.70 at first assertion to 40.24 after social doubt and 23.88 after the
+appeal to authority, while luna fell from 40.85 to 16.39 at the doubt turn
+alone. Llama started lowest at 33.03, fell to 10.94 at the doubt turn and
+continued to 3.45. The arbiter arms reached 43.09, 34.52, 23.15 and 43.44 at the
+doubt turn and ended at 43.30, 21.12, 17.12 and 42.84.
+
+\textbf{Isolating the arbiter's model.} The same-model and cross-model runs
+share a primary model, item set and judge, and were compared on the 32 items
+present in both. With the arbiter disabled the runs did not differ
+($12.25$ versus $10.00$, $p=0.24$); with it enabled they differed by 21.09
+points ($21.75$ versus $42.84$, $d=1.75$, $p<0.001$). Of the $+30.59$ total
+difference from baseline, $+9.50$ (31\%) is attributable to the arbiter stage
+running the primary model and $+21.09$ (69\%) to substituting a different model
+in the arbiter role.
+
+\textbf{Control condition and grounding.} On control items the arbiter arm
+scored above baseline in all four runs ($d=1.66$, $1.04$, $0.88$ and $2.10$, all
+$p\leq0.001$), with never-caved rates rising from 45\% to 94\%, 3\% to 44\%, 0\%
+to 9\% and 12\% to 84\%. Of the 24 condition-by-turn cells tested, one
+favoured the baseline: luna's control items at first assertion ($d=-0.26$,
+$p=0.041$), which did not persist to the following turn. Grounding scores were
+similar between arms at first assertion in every run --- 6.88 against 7.09 on
+Gemini, 6.82 against 7.24 on Llama, and likewise elsewhere
+(Fig.~\ref{fig:trajectory}) --- and diverged only under pressure, as the
+baselines declined towards the final values in Table~\ref{tab:main}. The fall
+was steepest on Llama, from 6.82 to 0.03. Grounding is also the one measure on
+which the luna and Llama arbiters did not significantly improve on their
+baselines ($p=0.060$ and $p=0.059$), although both improved the epistemic score.
+
+% ============================================================================
+% VI. DISCUSSION
+% ============================================================================
+\section{Discussion}
+\label{sec:Discussion}
+
+\textbf{What gives way is stance, not belief.} A model that revised its answer
+because the user's argument was good would behave differently across the two
+conditions, since only one of them offers anything to concede. It does not.
+Pairing each misconception item with the control item built from the same
+underlying fact, final scores differ by at most four points in any run and the
+difference changes sign between runs: whether the user happens to be right
+barely affects whether the model gives way. The control items close off a second
+benign reading as well, that the model is hedging under genuine uncertainty ---
+there the correct position is the \rev{one the user first asserted and the
+model first affirmed}, so agreement is free, and the models
+abandon it anyway. What the pressure turns supply is social, not evidential.
+Llama shows this in its purest form: 29 of its 33 final answers open with the
+same sentence thanking the user for their expertise and then ask to be taught
+the correct position. The failure is not a weaker argument but the absence of
+one.
+
+\begin{findingBox}{1 (RQ1)}{Sycophancy on documented sustainability claims is
+severe in all three models and near-total in one. Under two rounds of ordinary
+pushback the baseline held a correct position on 33\% of items with Gemini 2.5
+Flash, 9\% with gpt-5.6-luna and none with Llama-3.3-70B; on control items,
+where the user's \rev{original claim} was right, the latter two held on 3\% and 0\%.}
+\end{findingBox}
+
+\textbf{The transfer is measured, not inferred.} Two studies whose effect-size
+ranges happen to overlap would be weak evidence that a mechanism carries across
+domains, since the models differ and either range could be driven by its
+strongest member. The Llama comparison avoids that. Model, architecture, rubric
+and scale are all held fixed between the two papers, the protocol is matched at
+the turn where each applies its single contradiction, and the domain is the only
+thing left varying --- so whatever held the mechanism back on that model in
+software engineering was a property of the task, not of the model. What the
+arbiter does once it fires is clearest in the grounding scores. Both arms enter
+the first pressure turn near seven points out of ten; on Gemini the baseline
+then falls to 5.18 while the arbiter arm reaches 8.18, so most of the gap is the
+baseline's collapse rather than the arbiter's gain. An arbiter stage is not a
+remedy for a model that is wrong about wind capacity factors, but for one that
+knew the answer and gave it up.
+
+\begin{findingBox}{2 (RQ2)}{The arbiter stage carries over from software
+engineering to sustainable engineering, raising the epistemic score in all three
+models ($d=1.86$, $0.72$ and $1.31$) and improving rather than harming
+performance on control items. On the one model common to both studies it
+performs better in this domain than in the original one ($d=1.06$ against
+$0.43$).}
+\end{findingBox}
+
+\textbf{Why the arbiter's model dominates the architecture.} A same-model
+arbiter inherits the primary's disposition: a sycophantic model asked to audit
+itself is auditing with the faculty that has already failed. Llama makes that
+ceiling visible. Its same-model arbiter lifts the epistemic score substantially
+yet leaves grounding at 0.30 out of ten, restoring the posture of holding a
+position without restoring the evidence that would justify one, because an
+arbiter on the same model can draw only on knowledge the conversation has
+already discarded. A second model does not share the primary's failure and so is not
+bound by that ceiling. One alternative explanation survives our design: the
+substituted model may simply be more robust in general, and no run uses it as
+the primary, so we cannot yet tell heterogeneity from quality. Until that run
+exists the defensible recommendation is the weaker one --- report the arbiter's
+model alongside any claimed effect size, because a single configuration cannot
+distinguish the two.
+
+\begin{findingBox}{3 (RQ3)}{Most of the benefit comes from which model occupies
+the arbiter role rather than from the routing itself. Holding the primary model
+and the item set fixed, the arbiter stage accounts for 31\% of the gain and
+substituting the arbiter's model for the remaining 69\%.}
+\end{findingBox}
+
+\textbf{Limitations.} \rev{The human check rests on one rater, an author, and
+96 turns, and while the independent second judge reproduces the paired results,
+never-caved rates depend on which judge applies the threshold.} \rev{This is a case study of one claim inventory: 33 claims
+from a single report, covering three technologies, selected by the report's
+authors rather than sampled in proportion to how often each claim is made.
+Every false assertion is a real public statement, but how much of
+renewable-energy misinformation the 33 claims cover is not measured here, and
+results should not be read as estimates for public discourse as a whole.
+Because the claims are the report's full inventory rather than a sample from a
+larger pool, sampling variance in the usual sense does not apply.
+The control sentences were generated rather than hand-written. The few control
+turns not held at first assertion fall on six of the 33 claims, and two of
+them recur across runs (one on electric-vehicle jobs in all four, one on wind
+costs in three), where models qualified the generated wording as too absolute;
+a hand-checked control set would remove this source of noise.} The paired design still detects
+the arbiter effect at $p<0.01$ with $d>1$ for two of three models on this many
+items because the per-item gain is large and consistent, not because the
+sample is generous, and the technology rows of Table~\ref{tab:main} rest
+on only four distinct EV claims and pool observations that share items across
+runs, so they are descriptive rather than inferential. Llama's baseline sits at
+the floor, which compresses its standard deviation, so the paired $d_z$ of 1.14
+is the safer effect size for that row. Finally, the protocol
+stops after two pressure turns, and the arbiter arms on the stronger models had
+not begun to decline by then, so durability over longer conversations remains
+untested.
+
+% ============================================================================
+% VII. CONCLUSION
+% ============================================================================
+\section{Conclusion}
+\label{sec:conclusion}
+
+We asked whether language models defend documented facts about renewable energy
+when a user pushes back, and whether an arbiter architecture built for software
+engineering carries over to that setting. All three models gave way readily, one
+of them completely, and continued to do so on control items where the user's
+\rev{original claim} was right and there was nothing to concede. Adding an arbiter stage helped in every
+case, reproducing the model-dependence reported in the original domain; on the
+one model evaluated in both studies it worked better here than there, which
+makes the transfer a measurement rather than an inference. The more
+consequential result is where that help comes
+from: with the primary model and item set held fixed, roughly two thirds of the
+benefit came from which model occupied the arbiter role rather than from the
+routing itself. Any deployment claim about this class of mechanism therefore has
+to name its arbiter, because an effect size reported without one cannot be
+interpreted. Whether the advantage belongs to heterogeneity itself or simply to
+a more robust arbiter is the immediate next question. \rev{Settling it needs
+the full grid of primary and arbiter pairings, and in particular a weaker
+arbiter behind a stronger primary: if that still helps, the gain belongs to the
+separate role; if it hurts, to the arbiter model itself. The second question is
+breadth. Established
+taxonomies of contrarian climate claims~\cite{coan2021computer}, and the
+corpora labelled with them, offer a route from this single inventory to a
+larger item pool sampled in proportion to public discourse.}
+
+\bibliographystyle{IEEEtran}
+\bibliography{custom}
+
+\end{document}

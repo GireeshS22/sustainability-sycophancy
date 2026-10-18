@@ -1,0 +1,181 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{xcolor}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{enumitem}
+\usepackage[most]{tcolorbox}
+\usepackage{hyperref}
+\usepackage{parskip}
+\hypersetup{colorlinks=true, linkcolor=blue, urlcolor=blue, citecolor=blue}
+
+% --- Reviewer-quote environment (verbatim reviewer text in a gray box) ----
+\newenvironment{revquote}{%
+  \begin{tcolorbox}[
+    breakable,
+    colback=gray!8,
+    colframe=gray!50,
+    boxrule=0.4pt,
+    arc=2pt,
+    left=8pt, right=8pt, top=6pt, bottom=6pt
+  ]\itshape\small
+}{%
+  \end{tcolorbox}
+}
+
+% --- Issue header ---------------------------------------------------------
+\newcommand{\issue}[2]{\subsection*{#1\quad\textnormal{\normalfont\textmd{--- #2}}}}
+
+% --- Drafting marker: anything in red is still to be written or measured.
+%     Remove every \pending before sending; `grep -n pending` must come back empty.
+\newcommand{\pending}[1]{\textcolor{red}{\textbf{[PENDING:} #1\textbf{]}}}
+
+\title{Response to the Reviewers\\[6pt]
+\large Manuscript: \textit{Evaluating and Mitigating Sycophancy in LLMs for Sustainability Claims}\\[4pt]
+\normalsize Paper ID: 2557\\[2pt]
+2026 IEEE India Council International Conference (INDICON), Accept with Minor Revision}
+\author{}
+\date{\today}
+
+\begin{document}
+\maketitle
+\thispagestyle{empty}
+
+%==========================================================================
+\section*{To the reviewers}
+%==========================================================================
+
+Dear reviewers:
+
+Thank you for the time and care you gave to our manuscript. Both reports were specific and constructive, and every point has led to a change in the paper. Below we give a summary of changes, followed by a point-by-point response. In the revised manuscript, new and changed text is shown in blue font so it can be found quickly. The program committee allowed one additional page, which we used for the new judge-validation material and the clarifications requested by Reviewer~2.
+
+\paragraph{Notation used in this letter.} Each comment is tagged \textbf{R1.$n$} or \textbf{R2.$n$} for the $n$-th point raised by Reviewer~1 or Reviewer~2, numbered in the order it appears in the review. Reviewer text is quoted verbatim in grey boxes.
+
+\bigskip
+
+\noindent Best regards,\\
+The Authors
+
+\newpage
+
+%==========================================================================
+\section*{Summary of Changes}
+%==========================================================================
+
+Table~\ref{tab:summary-changes} maps each comment to the change we made and where it appears in the revised manuscript.
+
+\begin{longtable}{p{0.9cm} p{3.6cm} p{7.4cm} p{2.2cm}}
+\caption{Comment-to-change map.\label{tab:summary-changes}}\\
+\toprule
+\textbf{ID} & \textbf{Comment} & \textbf{What we did} & \textbf{Where} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{ID} & \textbf{Comment} & \textbf{What we did} & \textbf{Where} \\
+\midrule
+\endhead
+R1.1 & Figure quality & All figures verified as vector graphics with no embedded bitmaps, sharp at any zoom; main results table restyled so the key numbers stand out & Figs.~1--3, Table~III \\
+R1.2 & Concise abstract & Reviewed and shortened; information not needed to state the problem, design and main findings removed & Abstract \\
+R2.1 & Single judge, no human validation & Both added. Independent second judge (Claude Haiku 5.5) on all 1{,}584 turns: ICC 0.85; paired results and decomposition replicate (28/72). Human rater on a stratified 96-turn sample: ICC 0.82, clearing a gate fixed before rating. Scoring paragraph extended and new Table~II & §III, §V \\
+R2.2 & Small claim pool & Framed as a case study from the abstract on; stated that every misconception turn is a verbatim real public statement (checked for all 33); limitation rewritten; future-work line on taxonomy-based claim sets & Abstract, §I, §III, §V, §VI \\
+R2.3 & Control condition clarity & Measured turn-by-turn control behaviour; consistent wording; control-item construction and its generation described in the Items paragraph & Abstract, §III, §IV, §V, §VI \\
+R2.4 & Prompt transparency & All prompts, judge rubric, router keywords, conversations and scores released open source; link in §III (owner blinded for review) & §III \\
+R2.5 & Arbiter model ablation & Future work made concrete: full primary-by-arbiter grid, with a weaker arbiter behind a stronger primary as the decisive test; no new runs & §VI \\
+R2.6 & Holding threshold & Rationale stated (rubric band edge, not tuned); sensitivity at 10 and 17 reported: arbiter arm better in 24 of 24 comparisons & §III \\
+R2.7 & Model naming & Verified against all API responses: the name is correct; both OpenAI models now attributed to OpenAI at first mention, and the ablation arbiter named in the text & Abstract, §III \\
+R2.8 & Grounding score & Second reason added: grounding measures a different construct from holding a position, and the two separate in our data & §III \\
+\bottomrule
+\end{longtable}
+
+\clearpage
+
+%==========================================================================
+\section*{Detailed Responses}
+%==========================================================================
+
+Each comment is quoted in a grey box, followed by our response. Changes in the manuscript are marked in blue.
+
+%==========================================================================
+\section{Reviewer 1}
+%==========================================================================
+
+We thank Reviewer~1 for the recommendation and for both suggestions.
+
+\issue{R1.1}{Quality of figures}
+\begin{revquote}
+3. Is Quality of Figures satisfactory? Ok, Need Improvement
+\end{revquote}
+We checked every figure. All three are vector graphics with no embedded bitmaps and live text, so they stay sharp at any zoom and print resolution. To improve readability where the paper is densest, the main results table (Table~III) is restyled: arbiter columns are shaded, the key gains and never-caved rates are in bold, the ablation row is highlighted, and standard deviations are set smaller in grey.
+
+\issue{R1.2}{Concise abstract}
+\begin{revquote}
+abstract should be written in concise manner.
+\end{revquote}
+We reviewed the abstract sentence by sentence and removed information not needed to state the problem, the design and the main findings. That detail remains in the Methods and Results.
+
+%==========================================================================
+\section{Reviewer 2}
+%==========================================================================
+
+\begin{revquote}
+Strengths: Clear RQs and well-designed paired protocol: misconception vs.\ control items, two pressure rounds, fixed wording, manipulation check. Strong causal isolation: separating routing architecture (31\%) from arbiter model choice (69\%) is a valuable and actionable finding. Good statistical rigor: Wilcoxon, bootstrap CIs, Cohen's d, log-rank tests, effect sizes, and paired item analysis. Honest limitations: single LLM judge, no human agreement study, limited claim set, and Llama floor effects are acknowledged. Important domain: renewable energy misinformation is understudied for sycophancy.
+\end{revquote}
+We thank Reviewer~2 for a detailed and careful report. Each weakness is answered below.
+
+\issue{R2.1}{Single judge, no human validation}
+\begin{revquote}
+Single judge, no human validation: All scoring uses one LLM judge (gemini-2.5-flash). In some runs it shares a model family with the system under test. Add a human agreement study or at least a second independent judge.
+\end{revquote}
+We did both (§III, new Table~II). A second judge from a family not under test, Claude Haiku 5.5, rescored all 1{,}584 turns with identical prompts, and one author scored a stratified sample of 96 turns blind to model and arm, against a gate fixed before rating (ICC $\geq 0.70$, $\kappa_w \geq 0.60$). Agreement with the original judge is ICC 0.85 for the second judge and 0.82 for the human rater. Under the second judge every paired arbiter effect stays significant ($p<0.001$) and the routing/arbiter split is 28/72, against 31/69. Never-caved rates are lower under the stricter second judge, which we state in the Limitations. We see no self-preference: in the Gemini run the two judges agree as closely as elsewhere (ICC 0.85). A second human rater was excluded for not applying the rubric (14 of 23 critical-failure turns scored as held, against 3); this is noted in Table~II and all ratings are released.
+
+\issue{R2.2}{Small claim pool}
+\begin{revquote}
+Small claim pool: 33 claims from one Columbia Law report. Not representative of public discourse. Acknowledge, but consider broader claim sets or note as a case study.
+\end{revquote}
+The work is now framed as a case study from the abstract on (§I, §V). We also clarify that each misconception prompt is a real public statement quoted in the report, used verbatim (checked for all 33), so the claims are not our own wording. The Conclusion (§VI) names taxonomy-based claim sets (Coan et al., 2021) as the route to broader coverage.
+
+\issue{R2.3}{Control condition clarity}
+\begin{revquote}
+Control condition clarity: Clarify what ``held a correct position'' means when the user asserts the true claim and then expresses doubt via fixed pressure wording. The current description is slightly confusing.
+\end{revquote}
+On a control item the user asserts the true claim, which matches the model's own earlier answer. The pressure turns then dispute the model's answer, so the user turns against a position the two had shared. ``Held'' means the same in both conditions (epistemic responsibility $\geq 13$): on a control item, the model must keep affirming the true claim. We added measured evidence (§IV): at first assertion the baseline affirmed the true claim on 88--94\% of control items in every run, so control failures come under pressure, not at the outset. Wording is now consistent (``where the user's original claim was right''), and the Items paragraph states how control sentences were generated.
+
+\issue{R2.4}{Prompt transparency}
+\begin{revquote}
+Prompt transparency: Provide exact prompts for baseline, arbiter, router, and judge rubric. Router is deterministic keyword tiers---list the keywords.
+\end{revquote}
+All prompts (primary, arbiter, item generation and judge rubric), the router keyword lists, the conversations and all scores are released open source; the link is in §III (owner blinded for review).
+
+\issue{R2.5}{Arbiter model ablation}
+\begin{revquote}
+Arbiter model ablation: Only one different model used. Cannot distinguish heterogeneity vs.\ general robustness. You acknowledge this; recommend more configurations in future work.
+\end{revquote}
+Agreed. The Conclusion (§VI) now names the full grid of primary and arbiter pairings, with a weaker arbiter behind a stronger primary as the decisive test. No new runs were added.
+
+\issue{R2.6}{Holding threshold}
+\begin{revquote}
+Holding threshold: Justify the 13/20 epistemic responsibility threshold for ``held.''
+\end{revquote}
+13 is the lower edge of the rubric's own ``right action, minor flaws'' band (13--16), not a tuned value, and it is used only for the survival analysis. We reran that analysis at 10 and 17 (§III): the arbiter arm has the higher never-caved rate in all 24 comparisons, and the log-rank test is significant in 8/8 at 10, 7/8 at 13 and 6/8 at 17, the two losses being Llama, where few turns reach 17.
+
+\issue{R2.7}{Model naming}
+\begin{revquote}
+Model naming: Verify ``gpt-5.6-luna'' is the correct model name/version.
+\end{revquote}
+Verified against the raw API responses: all 931 report \texttt{gpt-5.6-luna} and all 134 ablation-arbiter responses report \texttt{gpt-5.6-terra} (8 August 2026). Both are now attributed to OpenAI at first mention (abstract, §III).
+
+\issue{R2.8}{Grounding score}
+\begin{revquote}
+Grounding score: Explain why grounding is reported separately and never added to the 50-point total.
+\end{revquote}
+Two reasons, now both in §III. Keeping it out keeps the 50-point score comparable with the published rubric, and it measures a different thing: a reply can cite evidence and still give way, or hold firm with none. Our data show this: Llama's arbiter arm raised the epistemic score from 3.45 to 17.12 while grounding stayed near zero (0.03 to 0.30).
+
+\bigskip
+\hrule
+\bigskip
+\noindent Thank you again for your time and for comments that have clearly improved the paper.
+
+\end{document}

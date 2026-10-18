@@ -1,0 +1,333 @@
+% Custom bibliography file for ACL paper
+% All citations verified via web search on 2026-01-01
+
+@article{SUNDARAM2027105031,
+title = {Epistemic fortitude: Architectural specialization for sycophancy mitigation in software engineering agents},
+journal = {Information Processing \& Management},
+volume = {64},
+number = {1, Part B},
+pages = {105031},
+year = {2027},
+issn = {0306-4573},
+doi = {https://doi.org/10.1016/j.ipm.2026.105031},
+url = {https://www.sciencedirect.com/science/article/pii/S030645732600422X},
+author = {Gireesh Sundaram and Balaji Venktesh V. and Sundharakumar K.B.},
+keywords = {Sycophancy, Multi-agent systems, Epistemic fortitude, Large language models, Conversational AI, Alignment, Fact verification},
+abstract = {Sycophancy—the tendency of RLHF-aligned language models to abandon factually correct answers under user contradiction—poses a critical risk in software engineering, where incorrect AI guidance can propagate bugs and erode developer trust. We introduce Epistemic Fortitude, a multi-agent architecture that separates epistemic oversight from conversational fluency: a Primary Agent handles normal interaction while an Arbiter Agent intervenes on detected contradictions, defending correct positions through evidence-based reasoning. A hybrid router combining keyword detection with LLM-based fallback triggers arbiter intervention. Evaluated on 300 software engineering conversations derived from SWE-bench Lite across four model families (Gemini 2.5 Flash, GPT-5.1, Claude Sonnet 4.5, Llama 3.3 70B; 2400 total conversations), the architecture produces statistically significant improvements in all cases (p<0.001), with effect sizes from d=0.40 (Llama) to d=1.79 (GPT-5.1). An ablation study shows architectural separation accounts for 49%–77% of the improvement in low-baseline models, beyond what prompt content alone provides. A complementary experiment (N=800) confirms the arbiter accepts valid user corrections without impediment. These results demonstrate that separating truthfulness enforcement from conversational fluency is a practical and generalizable path to sycophancy mitigation, achieving substantial epistemic improvement at modest token overhead, with cost overhead tunable through the choice of arbiter pairing.}
+}
+
+% ========================================
+% DATA SOURCE
+% ========================================
+
+% Recommended citation taken verbatim from the report's own front matter.
+@techreport{eisenson2024rebutting,
+  title = {Rebutting 33 False Claims About Solar, Wind, and Electric Vehicles},
+  author = {Eisenson, Matthew and Elkin, Jacob and Fitch, Andy and Ard, Matthew and Sittinger, Kaya and Lavine, Samuel},
+  institution = {Sabin Center for Climate Change Law, Columbia Law School},
+  year = {2024},
+  month = {4},
+  note = {Revised February 2025},
+  url = {https://scholarship.law.columbia.edu/sabin_climate_change/217}
+}
+
+% ========================================
+% DATASETS
+% ========================================
+
+@inproceedings{bowman2015snli,
+  author = {Bowman, Samuel R. and Angeli, Gabor and Potts, Christopher and Manning, Christopher D.},
+  booktitle = {Proceedings of the 2015 Conference on Empirical Methods in Natural Language Processing (EMNLP)},
+  title = {A large annotated corpus for learning natural language inference},
+  year = {2015},
+  publisher = {Association for Computational Linguistics}
+}
+
+@InProceedings{williams2018mnli,
+  author = {Williams, Adina and Nangia, Nikita and Bowman, Samuel},
+  title = {A Broad-Coverage Challenge Corpus for Sentence Understanding through Inference},
+  booktitle = {Proceedings of the 2018 Conference of the North American Chapter of the Association for Computational Linguistics: Human Language Technologies, Volume 1 (Long Papers)},
+  year = {2018},
+  publisher = {Association for Computational Linguistics},
+  pages = {1112--1122},
+  location = {New Orleans, Louisiana},
+  url = {http://aclweb.org/anthology/N18-1101}
+}
+
+@inproceedings{nie2020anli,
+  title = {Adversarial {NLI}: A New Benchmark for Natural Language Understanding},
+  author = {Nie, Yixin and Williams, Adina and Dinan, Emily and Bansal, Mohit and Weston, Jason and Kiela, Douwe},
+  booktitle = {Proceedings of the 58th Annual Meeting of the Association for Computational Linguistics},
+  year = {2020},
+  publisher = {Association for Computational Linguistics}
+}
+
+% ========================================
+% LANGUAGE MODELS
+% ========================================
+
+@article{radford2019language,
+  author = {Radford, Alec and Wu, Jeffrey and Child, Rewon and Luan, David and Amodei, Dario and Sutskever, Ilya},
+  journal = {OpenAI},
+  title = {Language Models are Unsupervised Multitask Learners},
+  url = {https://cdn.openai.com/better-language-models/language_models_are_unsupervised_multitask_learners.pdf},
+  year = {2019}
+}
+
+@inproceedings{brown2020language,
+  title={Language Models are Few-Shot Learners},
+  author={Brown, Tom and Mann, Benjamin and Ryder, Nick and Subbiah, Melanie and Kaplan, Jared D and Dhariwal, Prafulla and Neelakantan, Arvind and Shyam, Pranav and Sastry, Girish and Askell, Amanda and Agarwal, Sandhini and Herbert-Voss, Ariel and Krueger, Gretchen and Henighan, Tom and Child, Rewon and Ramesh, Aditya and Ziegler, Daniel and Wu, Jeffrey and Winter, Clemens and Hesse, Chris and Chen, Mark and Sigler, Eric and Litwin, Mateusz and Gray, Scott and Chess, Benjamin and Clark, Jack and Berner, Christopher and McCandlish, Sam and Radford, Alec and Sutskever, Ilya and Amodei, Dario},
+  booktitle={Advances in Neural Information Processing Systems},
+  volume={33},
+  year={2020}
+}
+
+@misc{touvron2023llama,
+  title={LLaMA: Open and Efficient Foundation Language Models},
+  author={Touvron, Hugo and Lavril, Thibaut and Izacard, Gautier and Martinet, Xavier and Lachaux, Marie-Anne and Lacroix, Timothée and Rozière, Baptiste and Goyal, Naman and Hambro, Eric and Azhar, Faisal and Rodriguez, Aurelien and Joulin, Armand and Grave, Edouard and Lample, Guillaume},
+  year={2023},
+  eprint={2302.13971},
+  archivePrefix={arXiv},
+  primaryClass={cs.CL}
+}
+
+@article{chowdhery2022palm,
+  author = {Chowdhery, Aakanksha and Narang, Sharan and Devlin, Jacob and Bosma, Maarten and Mishra, Gaurav and Roberts, Adam and Barham, Paul and Chung, Hyung Won and Sutton, Charles and Gehrmann, Sebastian and others},
+  title = {PaLM: Scaling Language Modeling with Pathways},
+  journal = {arXiv preprint arXiv:2204.02311},
+  year = {2022},
+  url = {https://doi.org/10.48550/arXiv.2204.02311}
+}
+
+% ========================================
+% NLP TOOLS AND METHODS
+% ========================================
+
+@article{honnibal2020spacy,
+  author = {Honnibal, Matthew and Montani, Ines and Van Landeghem, Sofie and Boyd, Adriane},
+  doi = {10.5281/zenodo.1212303},
+  title = {{spaCy: Industrial-strength Natural Language Processing in Python}},
+  year = {2020}
+}
+
+@inproceedings{reimers2019sentence,
+    title = {Sentence-BERT: Sentence Embeddings using Siamese BERT-Networks},
+    author = {Reimers, Nils and Gurevych, Iryna},
+    booktitle = {Proceedings of the 2019 Conference on Empirical Methods in Natural Language Processing},
+    month = {11},
+    year = {2019},
+    publisher = {Association for Computational Linguistics},
+    url = {https://arxiv.org/abs/1908.10084}
+}
+
+% ========================================
+% CONSISTENCY AND DECODING METHODS
+% ========================================
+
+@inproceedings{dathathri2019plug,
+  title={Plug and Play Language Models: A Simple Approach to Controlled Text Generation},
+  author={Sumanth Dathathri and Andrea Madotto and Janice Lan and Jane Hung and Eric Frank and Piero Molino and Jason Yosinski and Rosanne Liu},
+  booktitle={International Conference on Learning Representations},
+  year={2020},
+  url={https://openreview.net/forum?id=H1edEyBKDS}
+}
+
+@inproceedings{krause2021gedi,
+    title = {{G}e{D}i: Generative Discriminator Guided Sequence Generation},
+    author = {Krause, Ben and Gotmare, Akhilesh Deepak and McCann, Bryan and Keskar, Nitish Shirish and Joty, Shafiq and Socher, Richard and Rajani, Nazneen Fatema},
+    booktitle = {Findings of the Association for Computational Linguistics: EMNLP 2021},
+    month = {nov},
+    year = {2021},
+    address = {Punta Cana, Dominican Republic},
+    publisher = {Association for Computational Linguistics},
+    url = {https://aclanthology.org/2021.findings-emnlp.424/},
+    doi = {10.18653/v1/2021.findings-emnlp.424},
+    pages = {4929--4952}
+}
+
+@inproceedings{yang2021fudge,
+    title = {{FUDGE}: Controlled Text Generation With Future Discriminators},
+    author = {Yang, Kevin and Klein, Dan},
+    booktitle = {Proceedings of the 2021 Conference of the North American Chapter of the Association for Computational Linguistics: Human Language Technologies},
+    month = {jun},
+    year = {2021},
+    address = {Online},
+    publisher = {Association for Computational Linguistics},
+    url = {https://aclanthology.org/2021.naacl-main.276/},
+    doi = {10.18653/v1/2021.naacl-main.276},
+    pages = {3511--3535}
+}
+
+@inproceedings{lu2022neurologic,
+    title = {NeuroLogic A*esque Decoding: Constrained Text Generation with Lookahead Heuristics},
+    author = {Lu, Ximing and Welleck, Sean and West, Peter and Jiang, Liwei and Kasai, Jungo and Khashabi, Daniel and Le Bras, Ronan and Qin, Lianhui and Yu, Youngjae and Zellers, Rowan and Smith, Noah A. and Choi, Yejin},
+    booktitle = {Proceedings of the 2022 Conference of the North American Chapter of the Association for Computational Linguistics: Human Language Technologies},
+    month = {jul},
+    year = {2022},
+    address = {Seattle, United States},
+    publisher = {Association for Computational Linguistics},
+    url = {https://aclanthology.org/2022.naacl-main.57/},
+    doi = {10.18653/v1/2022.naacl-main.57},
+    pages = {780--799}
+}
+
+@inproceedings{qin2022cold,
+  author = {Qin, Lianhui and Welleck, Sean and Khashabi, Daniel and Choi, Yejin},
+  booktitle = {Advances in Neural Information Processing Systems},
+  editor = {Koyejo, S. and Mohamed, S. and Agarwal, A. and Belgrave, D. and Cho, K. and Oh, A.},
+  pages = {9538--9551},
+  publisher = {Curran Associates, Inc.},
+  title = {COLD Decoding: Energy-based Constrained Text Generation with Langevin Dynamics},
+  url = {https://proceedings.neurips.cc/paper_files/paper/2022/file/3e25d1aff47964c8409fd5c8dc0438d7-Paper-Conference.pdf},
+  volume = {35},
+  year = {2022}
+}
+
+% ========================================
+% RETRIEVAL AND KNOWLEDGE
+% ========================================
+
+@inproceedings{lewis2020retrieval,
+  title={Retrieval-augmented Generation for Knowledge-intensive NLP Tasks},
+  author={Lewis, Patrick and Perez, Ethan and Piktus, Aleksandara and Petroni, Fabio and Karpukhin, Vladimir and Goyal, Naman and K{\"u}ttler, Heinrich and Lewis, Mike and Yih, Wen-tau and Rockt{\"a}schel, Tim and others},
+  booktitle={Advances in Neural Information Processing Systems},
+  year={2020}
+}
+
+% ========================================
+% CONSISTENCY AND FAITHFULNESS
+% ========================================
+
+@article{dziri2022faithdial,
+  title = {{FaithDial: A Faithful Benchmark for Information-Seeking Dialogue}},
+  author = {Dziri, Nouha and Kamalloo, Ehsan and Milton, Sivan and Zaiane, Osmar and Yu, Mo and Ponti, Edoardo M and Reddy, Siva},
+  journal = {Transactions of the Association for Computational Linguistics},
+  volume = {10},
+  pages = {1473--1490},
+  year = {2022},
+  month = {12},
+  publisher = {MIT Press},
+  doi = {10.1162/tacl_a_00529}
+}
+
+@article{elazar2021measuring,
+    title = {Measuring and Improving Consistency in Pretrained Language Models},
+    author = {Elazar, Yanai and Kassner, Nora and Ravfogel, Shauli and Ravichander, Abhilasha and Hovy, Eduard and Sch{\"u}tze, Hinrich and Goldberg, Yoav},
+    journal = {Transactions of the Association for Computational Linguistics},
+    volume = {9},
+    year = {2021},
+    publisher = {MIT Press},
+    url = {https://aclanthology.org/2021.tacl-1.60/},
+    doi = {10.1162/tacl_a_00410},
+    pages = {1012--1031}
+}
+
+% ========================================
+% HALLUCINATION
+% ========================================
+
+@article{ji2023survey,
+  title={Survey of Hallucination in Natural Language Generation},
+  author={Ji, Ziwei and Lee, Nayeon and Frieske, Rita and Yu, Tiezheng and Su, Dan and Xu, Yan and Ishii, Etsuko and Bang, Yejin and Chen, Delong and Dai, Wenliang and Madotto, Andrea and Fung, Pascale},
+  journal={ACM Computing Surveys},
+  year={2023},
+  volume={55},
+  number={12},
+  pages={1--38},
+  publisher={ACM},
+  doi={10.1145/3571730}
+}
+
+@article{sharma2023towards,
+  title={Towards Understanding Sycophancy in Language Models},
+  author={Sharma, Mrinank and Tong, Meg and Korbak, Tomasz and Duvenaud, David and Askell, Amanda and Bowman, Samuel R. and Cheng, Newton and Durmus, Esin and Hatfield-Dodds, Zac and Johnston, Scott R. and Kravec, Shauna and Maxwell, Timothy and McCandlish, Sam and Ndousse, Kamal and Rausch, Oliver and Schiefer, Nicholas and Yan, Da and Zhang, Miranda and Perez, Ethan},
+  journal={arXiv preprint arXiv:2310.13548},
+  year={2023}
+}
+
+% ========================================
+% KNOWLEDGE EDITING
+% ========================================
+
+@InProceedings{mitchell2022fast,
+  title = {Memory-Based Model Editing at Scale},
+  author = {Mitchell, Eric and Lin, Charles and Bosselut, Antoine and Manning, Christopher D and Finn, Chelsea},
+  booktitle = {Proceedings of the 39th International Conference on Machine Learning},
+  pages = {15817--15831},
+  year = {2022},
+  volume = {162},
+  series = {Proceedings of Machine Learning Research},
+  publisher = {PMLR}
+}
+
+@inproceedings{meng2022locating,
+  title={Locating and Editing Factual Associations in {GPT}},
+  author={Meng, Kevin and Bau, David and Andonian, Alex and Belinkov, Yonatan},
+  booktitle={Advances in Neural Information Processing Systems},
+  year={2022},
+  volume={35},
+  url={https://arxiv.org/abs/2202.05262}
+}
+
+@article{zhu2020modifying,
+  title={Modifying Memories in Transformer Models},
+  author={Zhu, Chen and Rawat, Ankit Singh and Zaheer, Manzil and Bhojanapalli, Srinadh and Li, Daliang and Yu, Felix X. and Kumar, Sanjiv},
+  journal={arXiv preprint arXiv:2012.00363},
+  year={2020}
+}
+
+% ========================================
+% SUSTAINABLE ENERGY LLM DEPLOYMENTS
+% ========================================
+
+@article{ARSLAN2024114827,
+title = {Driving sustainable energy transitions with a multi-source RAG-LLM system},
+journal = {Energy and Buildings},
+volume = {324},
+pages = {114827},
+year = {2024},
+issn = {0378-7788},
+doi = {https://doi.org/10.1016/j.enbuild.2024.114827},
+url = {https://www.sciencedirect.com/science/article/pii/S0378778824009435},
+author = {Muhammad Arslan and Lamine Mahdjoubi and Saba Munawar},
+keywords = {Data-driven operations, Sustainable Energy Transitions (SETs), Information Extraction (IE), Large Language Models (LLMs), Retrieval Augmented Generation (RAG), Sustainable Development Goals (SDGs)},
+abstract = {By 2035, the UK aims to upgrade all homes to achieve a net-zero economy by 2050, thereby reducing energy consumption, household costs, and improving living conditions. Small and Medium-sized Enterprises (SMEs) play a crucial role in this transition. However, many SME contractors lack essential information on Sustainable Energy Initiatives (SEIs) and the relevant Energy landscape necessary for driving Sustainable Energy Transitions (SETs). This knowledge gap poses risks to SME interventions, potentially leading to increased costs and inefficiencies. Accessing timely information on SEIs including government policies, funding, technologies, and environmental impacts from various media sources is essential for guiding effective SETs and understanding the relevant Energy landscape, thereby facilitating informed decision-making. Currently, SMEs lack an integrated system that consolidates data from diverse media sources into a centralized Information System (IS), limiting their ability to effectively navigate SEIs. To address this gap, this research introduces an Energy Chatbot, a sustainable IS that utilizes Large Language Models (LLMs) integrated with multi-source Retrieval Augmented Generation (RAG). This system encompasses diverse media sources, including news articles, government reports, industry publications, academic research, and social media. The Energy Chatbot is designed to enhance decision-making for SMEs by providing comprehensive Energy sector insights through a Question Answering (QA) system. Key findings emphasize that this approach reduces costs by utilizing open-source models. Moreover, the Energy Chatbot provides SMEs with access to up-to-date information, enabling them to identify long-term sustainability strategies and maintain a competitive edge in the evolving Energy landscape.}
+}
+
+@article{ZHANG2026127076,
+title = {Large Language Models Meet Energy Systems: Opportunities, Challenges, and Future Perspectives},
+journal = {Applied Energy},
+volume = {403},
+pages = {127076},
+year = {2026},
+issn = {0306-2619},
+doi = {https://doi.org/10.1016/j.apenergy.2025.127076},
+url = {https://www.sciencedirect.com/science/article/pii/S0306261925018069},
+author = {Chaobo Zhang and Jian Zhang and Jie Lu and Yang Zhao},
+keywords = {Energy system, Smart energy, Large language model, ChatGPT, Artificial intelligence},
+abstract = {Large language models (LLMs) are sparking a groundbreaking revolution in the intelligent transformation of energy systems. They hold significant potential for applications in energy systems, where they can assist or even replace humans in completing complex tasks. However, the application of LLMs in energy systems is an emerging field, which lacks a comprehensive review. To address this gap, this paper provides a comprehensive review of the applications of LLMs in energy systems over the past seven years. The advantages, disadvantages, and target users of 22 types of LLMs (such as GPT, Llama, and ChatGLM) used in energy systems are summarized. Five performance enhancement technologies for developing domain-specific LLMs are discussed, including prompt engineering, knowledge augmentation, fine-tuning, multimodal integration, and autonomous agent. Thirteen roles of LLMs in energy systems are revealed, such as maintainer, adviser, programmer, and modeler. Based on the literature review, this paper identifies and highlights the opportunities and challenges associated with applying LLMs in energy systems. Furthermore, eight future directions are proposed to address these challenges. This paper offers valuable insights that can guide future research and advance the integration of LLMs in the energy domain.}
+}
+
+@Article{electronics15040749,
+AUTHOR = {Ali, {\c S}ener and Oprea, Simona-Vasilica and B{\^a}ra, Adela},
+TITLE = {Engineering Trustworthy Retrieval-Augmented Generation for EU Electricity Market Regulation},
+JOURNAL = {Electronics},
+VOLUME = {15},
+YEAR = {2026},
+NUMBER = {4},
+ARTICLE-NUMBER = {749},
+URL = {https://www.mdpi.com/2079-9292/15/4/749},
+ISSN = {2079-9292},
+ABSTRACT = {The regulatory framework governing EU electricity markets is highly complex, fragmented across multiple normative acts and sensitive to citation accuracy and contextual completeness. While Large Language Models (LLMs) offer promising capabilities for regulatory question answering (QA), their tendency to hallucinate legal references and omit critical conditions makes them unreliable for compliance-sensitive domains. This paper presents the design of a domain-specific Retrieval-Augmented Generation (RAG) system for EU electricity market regulations, explicitly engineered to deliver source-grounded, traceable and low-hallucination answers. The answering component is based on Google's gemini-2.5-flash model. The Open AI's gpt-4o-mini model is responsible for both relevant document selection before building the RAG prompt and playing the judge LLM role for Retrieval Augmented Generation Assessment (RAGAS) evaluation. We build a legal corpus comprising multiple core EU regulatory acts related to REMIT and market operation and propose a regulatory QA architecture that integrates: (i) three chunking strategies (article-based, structure-aware, sliding window), (ii) two embedding models and (iii) a novel LLM-based document selection agent that restricts retrieval to the most relevant normative acts before vector search, improving contextual focus and retrieval precision. Using a fixed benchmark of regulatory questions and a reproducible evaluation protocol, we quantitatively assess system performance with RAGAS metrics and classical information-retrieval measures. While all configurations achieve strong faithfulness (up to 0.96), answer relevancy varies substantially with embedding and chunking choices. The findings confirm that retrieval engineering, particularly embedding selection, chunking strategy and pre-retrieval document filtering, has a high impact for building reliable regulatory AI systems. The sliding window strategy combined with bge-small-en-v1.5 delivered the strongest rank-sensitive retrieval performance, achieving the highest Precision@10 and NDCG@10. In contrast, article-level chunking with the same model yielded a modest improvement in Recall@10, indicating a clear trade-off between recall and precision-oriented ranking quality in legal corpora.},
+DOI = {10.3390/electronics15040749}
+}
+
+@article{coan2021computer,
+  title = {Computer-assisted classification of contrarian claims about climate change},
+  author = {Coan, Travis G. and Boussalis, Constantine and Cook, John and Nanko, Mirjam O.},
+  journal = {Scientific Reports},
+  volume = {11},
+  pages = {22320},
+  year = {2021},
+  doi = {10.1038/s41598-021-01714-4}
+}
